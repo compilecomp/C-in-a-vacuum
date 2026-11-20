@@ -13,6 +13,6 @@ Construction is O(1) validation (nonzero backing) followed by one O(capacity) in
 ## Silent Failure Checklist
 
 1. Fallbacks: none; construction either succeeds or returns an error with no partial state.
-2. Truncation: none.
-3. Wrapping: none; no arithmetic beyond the length check.
-4. Error codes: InvalidArgument for a zero-length backing store; classification pinned by test_table_rejects_empty_backing.
+2. Truncation: none; the u32::MAX slot ceiling makes later slot-index narrowing exact.
+3. Wrapping: none; no arithmetic beyond the two length checks.
+4. Error codes: InvalidArgument for a zero-length backing store and for a backing store longer than u32::MAX slots (the handle-encoding ceiling); classification pinned by test_table_rejects_empty_backing.
