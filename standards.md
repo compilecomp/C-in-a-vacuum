@@ -15766,3 +15766,208 @@ Reason: Tier 2 documentation is vague and lacks silicon reality. Does not mentio
 Rule: CEP&CC 68.3.2
 Action: Rewrite with exact microarchitectural analysis and PMC evidence.
 ```
+
+# 69. Benchmarking and Performance Evidence
+
+This chapter extends CEP&CC for the continuous measurement, validation, and enforcement of performance claims. Modern codebases rot because developers treat benchmarks as pre-release formalities, relying on wall-clock time on unpinned developer laptops, and optimizing for the "average" case. 
+
+Average-case performance is a lie. A system that performs well in a clean, warm-cache, perfectly-aligned laboratory environment will collapse in production when the TLB thrashes, the branch predictor is poisoned, and the cache is contested. If you optimize for the happy path, you are hiding the cliffs.
+
+A performance claim without hardware-backed evidence is a lie. Instruction count is not evidence. Wall-clock time is not evidence. Only Performance Monitoring Counters (PMCs) on frequency-locked, isolated hardware constitute evidence.
+
+Where this chapter is stricter than the general CEP&CC rules, this chapter wins.
+
+---
+
+## 69.1 Core Requirement: Unmeasured Code is a Defect
+> **A performance claim without hardware-backed evidence is a lie.**
+> **Wall-clock time on an unpinned developer machine is not evidence.**
+> **Only Performance Monitoring Counters (PMCs) on frequency-locked, isolated hardware constitute evidence.**
+> **The Worst-Case is the only case that matters. The Best-Case is merely a floor.**
+
+Violations of benchmarking requirements are Severity 0 defects. A release cannot be qualified if the benchmarking quotas and evidence requirements are not met.
+
+---
+
+## 69.2 Benchmarking Quotas and Execution Bounds
+Benchmarking is not a pre-release formality. It is a continuous, per-commit CI gate.
+
+### 69.2.1 Execution Quotas
+A benchmark run is statistically invalid if the hardware's branch predictors and caches have not reached a steady state.
+- **Minimum Executions:** Every CEP-0, HPC-0, RCS-0, or OPT-0/OPT-1 benchmark harness must execute the target hot path at least **10,000,000 (10 million) times** per input class per benchmark run.
+- **Warm-up Phase:** The first 1,000,000 iterations are discarded as warm-up and are not included in the PMC aggregation.
+- **Variance Threshold:** The variance (p99 vs p50) of the cycle count must be < 5% for L1-bound code, and < 15% for memory-bound code. If variance exceeds this, the benchmark environment is defective, and the run is **exterminated**.
+
+### 69.2.2 Coverage Quotas
+- **100% of CEP-0, HPC-0, and RCS-0 functions** must have at least one dedicated benchmark harness.
+- **100% of functions claiming OPT-0 or OPT-1** must have a benchmark proving the claim against the documented lower bound.
+
+---
+
+## 69.3 Input Distribution and Hardware State Matrices
+Benchmarks that only test the "average" or "happy" case are decorative. They hide cache misses, branch mispredictions, and TLB thrashing. The hardware state matrix must be dominated by the worst case.
+
+### 69.3.1 The 80/10/10 State Matrix Mandate
+The hardware state profile distribution is mandatory, non-negotiable, and heavily skewed toward adversarial conditions. Every benchmark harness must execute across the following exact distribution:
+
+1. **Worst-Case / Adversarial (80% of inputs):** This is the reality of production. Data structures are intentionally misaligned, scattered across pages to induce TLB misses and L1/L2/L3 cache evictions. Branch inputs are designed to defeat the branch predictor (e.g., alternating true/false, pseudo-random). Memory is actively contested by background threads to simulate NUMA contention and cache pollution. **The 80% Worst-Case metric is the *primary* reported cost.**
+2. **Mid-Case / Realistic (10% of inputs):** Real-world data distributions, standard alignment, natural branch biases. Used only to verify that the code does not regress on typical workloads.
+3. **Best-Case / Ideal (10% of inputs):** Perfectly aligned, contiguous memory, 100% predictable branches. Proves the absolute floor of the cycle cost. Used only to prove that the compiler has not generated structurally pessimal code.
+
+If a function's performance is dominated by the Best-Case matrix while failing the Worst-Case matrix, the function is **exterminated**. 
+
+### 69.3.2 Cost Variance Documentation
+Because the Worst-Case dominates the matrix, the `CEP:COST` comment must document the variance across the states, with the Worst-Case leading.
+
+Bad:
+```cpp
+// CEP:COST: 3 cycles/element.
+```
+
+Good:
+```cpp
+// CEP:COST: 42 cycles/element (Worst-Case: L2 miss, mispredict), 14 cycles/element (Mid-Case), 3 cycles/element (Best-Case: L1 hit, predictable branch).
+```
+
+Failing to document the 80% Worst-Case hardware state cost is a **Severity 0 defect**.
+
+---
+
+## 69.4 Hardware Pinning and PMC Requirements
+The host operating system's scheduler and power manager are the enemies of cycle-exact measurement.
+
+### 69.4.1 Environment Pinning
+All CI benchmark runners must enforce:
+- **CPU Isolation:** `isolcpus` or equivalent. The benchmark thread is pinned to an isolated core. No OS scheduler interference.
+- **Frequency Locking:** DVFS (Dynamic Voltage and Frequency Scaling) must be disabled. The CPU must be locked to the *sustained base frequency* (not turbo boost).
+- **NUMA Locality:** Memory must be allocated on the NUMA node local to the pinned core.
+- **Interrupt Affinity:** Hardware interrupts must be routed away from the benchmark core.
+
+### 69.4.2 Mandatory PMCs
+Wall-clock time is recorded for reporting, but verdicts are based on PMCs. Every benchmark receipt must include:
+- `cycles` (core cycles)
+- `instructions` (retired instructions)
+- `L1-dcache-load-misses`
+- `LLC-load-misses` (Last Level Cache)
+- `branch-misses`
+- `dTLB-load-misses`
+- `IPC` (Instructions Per Cycle)
+
+If any PMC counter is missing or zeroed out due to lack of hardware support, the benchmark environment is invalid, and the run is **exterminated**.
+
+---
+
+## 69.5 Regression Gates and Assembly Diffing
+
+### 69.5.1 Cycle and Uop Regressions
+- **Worst-Case Regression:** A >2% increase in mean cycle count on the **80% Worst-Case matrix**, or any increase on the Best-Case matrix, blocks the merge.
+- **Instruction/Uop Regression:** Any increase in retired instruction count requires a documented waiver proving that the extra instructions reduce latency (e.g., replacing a slow multiply with a shift and add, or breaking a dependency chain).
+
+### 69.5.2 Golden Disassembly
+- The exact SHA-256 hash of the disassembled machine code for every CEP-0 function is stored in the CI database.
+- Any change to the assembly hash triggers a mandatory human review. The developer must attach a PMC comparison proving the new assembly is equal or superior in the targeted hardware state.
+- Silent codegen changes (e.g., the compiler decided to spill a register differently) are **Severity 0 defects**.
+
+---
+
+## 69.6 Benchmark Receipts and Cryptographic Provenance
+Benchmark evidence must be tamper-proof.
+
+### 69.6.1 Receipt Structure
+The CI runner generates a cryptographically signed JSON manifest:
+```json
+{
+  "receipt_id": "uuid-v4",
+  "commit_hash": "abc123def",
+  "hardware_topology": {
+    "cpu": "AMD EPYC 7763",
+    "base_freq_mhz": 2450,
+    "numa_node": 0,
+    "l1_cache_bytes": 32768
+  },
+  "targets": [
+    {
+      "function": "cep::hot::decode_opcode",
+      "assembly_hash": "sha256:8f3a2c...",
+      "matrix": {
+        "worst_80": { "cycles_p50": 42, "l1_miss_p50": 12, "br_misp_p50": 0 },
+        "mid_10":   { "cycles_p50": 14, "l1_miss_p50": 2,  "br_misp_p50": 0 },
+        "best_10":  { "cycles_p50": 3,  "l1_miss_p50": 0,  "br_misp_p50": 0 }
+      },
+      "executions": 10000000,
+      "variance_pct": 1.2
+    }
+  ],
+  "signature": "ed25519_signature_from_ci_private_key"
+}
+```
+
+### 69.6.2 Provenance
+The receipt is signed by the CI runner's private key. `cep_lint` verifies the signature and the hardware topology against the approved CI runner manifest.
+
+---
+
+## 69.7 Mechanical Enforcement: `cep_lint`
+
+### Rule CEP-LINT-BENCH-EVIDENCE
+**Severity 0. Check: `benchmark_manifest`.**
+When invoked, `cep_lint` performs the following:
+1. Identifies all functions classified as CEP-0, HPC-0, RCS-0, or claiming OPT-0/OPT-1.
+2. Locates the Benchmark Receipt JSON in the commit artifacts.
+3. Verifies the cryptographic signature.
+4. Verifies that `executions >= 10,000,000` and `variance_pct` is within bounds.
+5. Verifies that all mandatory PMCs are present and non-zero (where hardware supports them).
+6. Verifies that the `assembly_hash` matches the compiled binary for the commit.
+7. **Verifies the 80/10/10 matrix distribution.** If the `worst_80` key is missing or its cycle count exceeds the documented `CEP:COST` worst-case bound, the merge is blocked.
+
+If any check fails, `cep_lint` exits with code 1 and blocks the merge.
+
+---
+
+## 69.8 Extermination Examples
+
+### Example 1: Wall-Clock Only Benchmark
+**Violation:**
+```cpp
+// Benchmark uses std::chrono::high_resolution_clock and reports "1.2 ms".
+```
+**Response:**
+```text
+EXTERMINATE
+Reason: Wall-clock time is not evidence. PMCs are missing. The OS scheduler could have context-switched during the run.
+Rule: CEP&CC 69.4.2
+Action: Instrument the harness with perf_event_open to capture cycles, instructions, and cache misses.
+```
+
+### Example 2: Happy-Path Dominated Benchmark
+**Violation:**
+A hash table benchmark uses 90% sequential, pre-inserted keys (Best-Case) and 10% random keys.
+**Response:**
+```text
+EXTERMINATE
+Reason: Benchmark violates the 80/10/10 State Matrix Mandate. It lacks the 80% Worst-Case adversarial matrix. Fails to prove performance under cache thrashing and branch misprediction.
+Rule: CEP&CC 69.3.1
+Action: Restructure the harness so that 80% of the inputs induce L1/L2 misses, TLB thrashing, and branch mispredictions.
+```
+
+### Example 3: Unpinned CPU / DVFS Enabled
+**Violation:**
+Benchmark runs on a shared CI runner with default OS power management.
+**Response:**
+```text
+EXTERMINATE
+Reason: Hardware environment is defective. DVFS causes frequency scaling, making cycle counts non-deterministic.
+Rule: CEP&CC 69.4.1
+Action: Move benchmark to an isolated, frequency-locked runner.
+```
+
+### Example 4: Silent Codegen Regression
+**Violation:**
+A developer changes a loop bound. The compiler generates a slightly different loop with 2 extra instructions. The cycle count on the "Best-Case" matrix is identical, so the developer merges.
+**Response:**
+```text
+EXTERMINATE
+Reason: Assembly hash changed. Instruction count regressed. No waiver or PMC proof provided to justify the extra uops.
+Rule: CEP&CC 69.5.2
+Action: Revert. Provide a PMC comparison proving the new assembly is superior in the 80% Worst-Case matrix, or restore the original codegen.
+```
