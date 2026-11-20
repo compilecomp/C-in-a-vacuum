@@ -153,7 +153,7 @@ impl<'a> Bitmap<'a> {
     // CEP:ASSUMES: none beyond the bounds contract.
     // CEP:COST: worst-case O(limit/64) word loads; full words are skipped in one load; no allocation.
     // CEP:OPTIMAL: lower-bound optimal
-    // CEP:OPTPROOF: any correct search over a bit array must at minimum load each word that can contain a candidate before the answer; this implementation loads exactly the words from `from` to the answer, skipping full words in one load, so its load count matches the lower bound for a LSB-first first-free search.
+    // CEP:OPTPROOF: any correct search over a bit array must at minimum load each word that can contain a candidate before the answer; this implementation loads exactly the words from `from` to the answer, skipping full words in one load, so its load count matches the lower bound for a LSB-first first-free search. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91). Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
     // CEP:EVIDENCE: cargo test -p civ-pmm test_bitmap_find_zero_patterns; Kani proof proof_bitmap_run_search_consistent.
     pub fn find_zero(&self, from: u64, limit: u64) -> Result<Option<u64>, PmmError> {
         let capacity = self.bits_capacity();
@@ -188,7 +188,7 @@ impl<'a> Bitmap<'a> {
     // CEP:ASSUMES: none beyond the bounds contract.
     // CEP:COST: worst-case O(limit/64) word loads; zero words skipped in one load; no allocation.
     // CEP:OPTIMAL: lower-bound optimal
-    // CEP:OPTPROOF: same load-count lower bound as find_zero with reversed polarity; zero words are skipped in one load.
+    // CEP:OPTPROOF: same load-count lower bound as find_zero with reversed polarity; zero words are skipped in one load. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91). Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
     // CEP:EVIDENCE: cargo test -p civ-pmm test_reserve_range_conflict_atomic; Kani proof proof_reserve_conflict_is_atomic.
     pub fn find_one(&self, from: u64, limit: u64) -> Result<Option<u64>, PmmError> {
         let capacity = self.bits_capacity();
@@ -223,7 +223,7 @@ impl<'a> Bitmap<'a> {
     // CEP:ASSUMES: Caller keeps start + run_len within capacity; enforced here by the checked end computation.
     // CEP:COST: O(run/64 + 1) word loads with masked segment testing; no allocation.
     // CEP:EVIDENCE: Kani proof proof_bitmap_run_search_consistent (agreement between find_zero_run result and this verifier).
-    fn run_is_zero(&self, start: u64, run_len: u64) -> Result<bool, PmmError> {
+    pub(crate) fn run_is_zero(&self, start: u64, run_len: u64) -> Result<bool, PmmError> {
         let capacity = self.bits_capacity();
         let end = start.checked_add(run_len).ok_or(PmmError::Overflow)?;
         if end > capacity {
@@ -263,7 +263,6 @@ impl<'a> Bitmap<'a> {
     // CEP:OPTIMAL: not-optimal
     // CEP:OPTPROOF: the search matches the exclusion lower bound (Omega(p/64) word loads plus Omega(run/64) verification words) up to the disclosed constant factor below.
     // CEP:OPTNOTE: the candidate-verification helper re-loads words already skipped as full, so a single fused scan would be cheaper; the shared verifier keeps one proof surface for tests, proofs, and the Law-3 assertion, which 23.8 weights above the word saving. Optimization tracked as ticket CEP-12.
-    // CEP:OPTNOTE: the candidate-verification helper re-loads words already skipped as full; retaining it keeps one verification routine shared by debug assertions, tests, and proofs, which the standards weight above the single-word saving (23.8 optimality blockers are clean-code violations).
     // CEP:EVIDENCE: cargo test -p civ-pmm test_bitmap_find_zero_patterns, test_alloc_contiguous_after_fragmentation; Kani proof proof_bitmap_run_search_consistent.
     pub fn find_zero_run(
         &self,
@@ -314,7 +313,7 @@ impl<'a> Bitmap<'a> {
     // CEP:ASSUMES: The run was verified free immediately before the call (allocator: find_zero_run result; proofs: harness-established state); enforced by debug assertion, not trusted.
     // CEP:COST: O(run/64 + 1) masked word writes; no allocation, no branches per bit.
     // CEP:OPTIMAL: lower-bound optimal
-    // CEP:OPTPROOF: flipping n consecutive bits spanning w words requires at least w read-modify-write word operations; the implementation performs exactly one RMW per touched word.
+    // CEP:OPTPROOF: flipping n consecutive bits spanning w words requires at least w read-modify-write word operations; the implementation performs exactly one RMW per touched word. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91). Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
     // CEP:EVIDENCE: cargo test -p civ-pmm test_bitmap_find_zero_patterns; Kani proof proof_bitmap_set_run_bounds.
     pub fn set_run(&mut self, start: u64, run_len: u64) -> Result<(), PmmError> {
         if run_len == 0 {
@@ -348,7 +347,7 @@ impl<'a> Bitmap<'a> {
 
     /// Number of set bits; the allocator's allocated-frame accounting cross-check.
     // CEP:WHAT: Counts allocation bits set across the backing store.
-    // CEP:WHY: Invariant 2 of the crate (allocated_count equals bitmap popcount) needs a mechanical witness for tests, proofs, and runtime telemetry (design.md 4.1 free-page accounting).
+    // CEP:WHY: Invariant 2 of the crate (allocated_count equals bitmap popcount) needs a mechanical witness for tests, proofs, and runtime telemetry (design.md 1.3 Algorithms: free-page accounting).
     // CEP:STATUS: complete
     // CEP:FAILURE: none; total function.
     // CEP:ASSUMES: none.

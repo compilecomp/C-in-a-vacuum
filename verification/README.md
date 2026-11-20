@@ -23,7 +23,7 @@ currently implements the first layers:
 | Compiler, linker, binary verification | UNDEFINED | Not started; requires the kernel build target (design.md 2.2) |
 | Boot and deployed-system validation | UNDEFINED | Not started; requires hardware bring-up |
 
-UNDEFINED layers are declared per design.md 0.3; they are not silently assumed complete.
+UNDEFINED layers are declared per design.md 0.3; they are not silently assumed complete. Ticket CIV-1 tracks the population of this verification tree itself and is registered in security/threat_model.md alongside the residual-risk entries.
 
 ## Proof classes
 
@@ -35,9 +35,11 @@ Per standards 54.2, artifacts declare one of:
 
 Every Kani harness is FV-1: bounded model checking over symbolic inputs with an
 explicit bound documented in the harness and in the proof registry entry. A Kani
-result proves the property for all inputs within the declared bound and the declared
-model; it does not establish universal real-world correctness (CIV verification
-chain.md section 2, critical limitation, quoted verbatim in each registry entry).
+result proves the property for all inputs within the declared bound and the
+declared model; it does not establish universal real-world correctness. Each
+registry entry records this limitation in its scope field (bounded model per
+the entry's assumptions); the source statement is CIV verification chain.md
+section 2, critical limitation.
 
 ## Reproduction
 

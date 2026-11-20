@@ -6,7 +6,7 @@
 // CEP:FAILURE: Every operation returns a typed error (PmmError) instead of panicking; failed operations leave state unchanged; no allocation; no I/O.
 // CEP:ASSUMES: Single-owner access (not Sync/Send); frame_count fits the backing store (validated in new); base_frame + frame_count does not overflow (validated in new, then immutable, relied on via debug assertion per Law 3).
 // CEP:COST: alloc O(1) amortized via rotating hint plus O(words) worst-case wrap; alloc_contiguous O(count/64) first-fit; free O(1); reserve O(len/64); all allocation-free.
-// CEP:EVIDENCE: unit tests in source/kernel/civ-pmm/tests/allocator_tests.rs (33 scenarios, adversarial-dominant); Kani proofs proof_alloc_exhaustion_and_uniqueness, proof_free_validates_untrusted_input, proof_contiguous_bounds_and_disjoint, proof_reserve_conflict_is_atomic, proof_bitmap_run_search_consistent, proof_bitmap_set_run_bounds, proof_invariant_popcount_matches_allocated.
+// CEP:EVIDENCE: unit tests in source/kernel/civ-pmm/tests/allocator_tests.rs (33 scenarios, adversarial-dominant; free-page accounting authority is design.md 1.3 Algorithms); Kani proofs proof_alloc_exhaustion_and_uniqueness, proof_free_validates_untrusted_input, proof_contiguous_bounds_and_disjoint, proof_reserve_conflict_is_atomic, proof_bitmap_run_search_consistent, proof_bitmap_set_run_bounds, proof_invariant_popcount_matches_allocated.
 // CEP:SECURITY: All inputs untrusted (threat model TM-1, TM-2); free and reserve validate ownership before mutation; bounds checks are retained as required security cost (standards 23.7).
 
 //! Frame allocator state machine.
@@ -40,7 +40,7 @@ impl<'a> FrameAllocator<'a> {
     // CEP:ASSUMES: The caller owns the backing store exclusively for the allocator's lifetime; enforced by the mutable borrow.
     // CEP:COST: O(words) for the one-time clear; all other work O(1).
     // CEP:OPTIMAL: lower-bound optimal
-    // CEP:OPTPROOF: an allocator over w words cannot guarantee a deterministic fresh state without writing w words once (the backing contents are unconstrained); the construction performs exactly that single pass plus O(1) validation.
+    // CEP:OPTPROOF: an allocator over w words cannot guarantee a deterministic fresh state without writing w words once (the backing contents are unconstrained); the construction performs exactly that single pass plus O(1) validation. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
     // CEP:EVIDENCE: cargo test -p civ-pmm test_new_rejects_undersized_bitmap, test_new_rejects_unaligned_base, test_new_rejects_overflow_base; Kani proof proof_new_rejects_bad_config_no_panic.
     // CEP:SECURITY: Base address and frame count come from the firmware memory map (design.md 2.2 memory-map handoff) and are untrusted until validated here; unvalidated values would alias device memory (design.md 4.5).
     pub fn new(base: PhysAddr, frame_count: u64, backing: &'a mut [u64]) -> Result<Self, PmmError> {
@@ -118,7 +118,7 @@ impl<'a> FrameAllocator<'a> {
     // CEP:STATUS: complete
     // CEP:FAILURE: Returns InvalidArgument for zero or oversized run length; Exhausted when no run of the requested length exists anywhere in the window; state unchanged on error.
     // CEP:ASSUMES: none beyond construction invariants.
-    // CEP:COST: O(count/64) word loads plus O(run/64) verification per candidate; candidates never re-examine excluded bits (bitmap::find_zero_run conflict skipping); no allocation.
+    // CEP:COST: O(count/64) word loads plus O(run/64) verification per candidate; candidates never re-examine excluded bits (bitmap::find_zero_run conflict skipping); no allocation. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
     // CEP:OPTIMAL: lower-bound optimal
     // CEP:OPTPROOF: a complete first-fit search must certify that no earlier position hosts the run, which requires scanning every word up to the answer at least once (Omega(count/64) loads); the implementation loads exactly that.
     // CEP:OPTNOTE: a hint-bounded search would be faster on average but incomplete across the hint boundary; completeness was chosen over average speed per design.md 4.2 demand-paging correctness and standards 23.7 (correctness beats micro-optimality).
@@ -156,7 +156,7 @@ impl<'a> FrameAllocator<'a> {
     // CEP:ASSUMES: The frame window top (base_frame + frame_count) cannot overflow; validated at construction and immutable since, enforced here by debug assertion per Law 3.
     // CEP:COST: O(1); two compares, one bounds-checked bit read, one clear, one accounting update.
     // CEP:OPTIMAL: lower-bound optimal
-    // CEP:OPTPROOF: correct double-free rejection requires reading the bit before clearing; the implementation performs exactly one read, one clear, and the two range comparisons any correct ownership check needs.
+    // CEP:OPTPROOF: correct double-free rejection requires reading the bit before clearing; the implementation performs exactly one read, one clear, and the two range comparisons any correct ownership check needs. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
     // CEP:SECURITY: Ownership validation is retained security cost (standards 23.7); removing it would enable cross-owner frame aliasing (design.md 4.5 no use-after-free).
     // CEP:EVIDENCE: cargo test -p civ-pmm test_double_free_rejected, test_free_out_of_range_rejected, test_free_then_realloc_returns_same_frame; Kani proof proof_free_validates_untrusted_input over the full u64 input range.
     pub fn free(&mut self, frame: Frame) -> Result<(), PmmError> {
@@ -185,9 +185,9 @@ impl<'a> FrameAllocator<'a> {
     // CEP:STATUS: complete
     // CEP:FAILURE: Returns InvalidArgument for empty ranges or ranges outside the window; RegionInUse when any frame in the range is already allocated; state is bit-for-bit unchanged on every error path.
     // CEP:ASSUMES: The range end is exclusive and within the window; validated here against the construction-validated window top.
-    // CEP:COST: O(len/64) conflict scan plus O(len/64) run set; one pass each; no allocation.
+    // CEP:COST: O(len/64) conflict scan plus O(len/64) run set; one pass each; no allocation; benchmark receipt pending CIV-4 (ticket CEP-91).
     // CEP:OPTIMAL: lower-bound optimal
-    // CEP:OPTPROOF: an atomic reserve must examine every word of the range for conflicts before writing any of them, and must write every word it accepts; the implementation performs exactly one conflict pass and one write pass.
+    // CEP:OPTPROOF: an atomic reserve must examine every word of the range for conflicts before writing any of them, and must write every word it accepts; the implementation performs exactly one conflict pass and one write pass. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
     // CEP:EVIDENCE: cargo test -p civ-pmm test_reserve_range_conflict_atomic, test_reserve_range_then_alloc_skips; Kani proof proof_reserve_conflict_is_atomic.
     pub fn reserve_range(&mut self, range: FrameRange) -> Result<(), PmmError> {
         if range.is_empty() {
@@ -264,7 +264,7 @@ impl<'a> FrameAllocator<'a> {
 
     /// Popcount of the allocation bitmap; the mechanical witness for crate invariant 2.
     // CEP:WHAT: Counts set bits directly in the bitmap, independent of the accounting counter.
-    // CEP:WHY: Invariant telemetry (design.md 4.1 free-page accounting) requires a second, differently-computed source of truth; disagreements between counter and popcount are detectable corruption, not silent drift (standards 66.1 silence is a defect).
+    // CEP:WHY: Invariant telemetry (design.md 1.3 Algorithms: free-page accounting) requires a second, differently-computed source of truth; disagreements between counter and popcount are detectable corruption, not silent drift (standards 66.1 silence is a defect).
     // CEP:STATUS: complete
     // CEP:FAILURE: none; total function.
     // CEP:ASSUMES: none.

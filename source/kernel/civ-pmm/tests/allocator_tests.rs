@@ -608,7 +608,6 @@ fn test_frame_range_inverted_rejected() {
 // ---------------------------------------------------------------------------
 
 // CEP:ID: MEM-a17
-// CEP:ID: MEM-a17
 // CEP:WHAT: Every bitmap primitive rejects out-of-capacity indices and zero-length runs directly, with no mutation after failures.
 // CEP:WHY: The allocator clamps indices to the managed window, so allocator tests cannot reach the bitmap capacity branches; driving the bitmap API directly covers the InvalidArgument branches documented in each FAILURE field.
 // CEP:STATUS: complete
@@ -650,7 +649,6 @@ fn test_bitmap_direct_out_of_bounds_rejected() {
     assert_eq!(bitmap.popcount(), 0);
 }
 
-// CEP:ID: MEM-a18
 // CEP:ID: MEM-a18
 // CEP:WHAT: FrameRange::contains classification at both boundaries and for an empty range.
 // CEP:WHY: contains is the ownership predicate future page-table consumers rely on (design.md 4.2); pinning it while it awaits its first kernel caller prevents silent drift (standards 34.4 coverage-or-delete).

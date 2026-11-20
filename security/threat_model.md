@@ -60,6 +60,7 @@ and residual risk. Entries are versioned; a change to any field is a registry up
 
 | ID | Description | Ticket |
 |---|---|---|
+| CIV-1 | Verification tree population in progress: Kani proofs are UNVERIFIED until a recorded cargo kani run exists; tracked as the verification-tree ticket cited by threat-model and README headers | CIV-1 |
 | CIV-2 | Capability handle entropy against cross-process guessing requires the process manager | CIV-3 |
 | CIV-3 | Per-commit Hunt Receipt infrastructure (standards 65) requires a CI runner with a signing key | CEP-90 |
 | CIV-4 | PMC-backed benchmark receipts (standards 69) require isolated, frequency-locked hardware | CEP-91 |

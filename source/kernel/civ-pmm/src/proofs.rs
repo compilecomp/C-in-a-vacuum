@@ -4,9 +4,9 @@
 // CEP:CLASS: FV-1
 // CEP:STATUS: complete
 // CEP:FAILURE: A failing harness aborts cargo kani with a counterexample trace; a harness that fails to compile blocks CI. Harnesses are excluded from non-Kani builds by cfg(kani).
-// CEP:ASSUMES: Bounded model: frame counts are bounded per harness (<= 64 or <= 128 as declared), backing stores are fixed-size arrays, per-harness unwind bounds are declared via #[kani::unwind] (8 to 72 as annotated), and the frame-size constant is the x86-64 4 KiB baseline. Bounds are recorded in verification/proof-registry.json; properties beyond the bound are covered by checked arithmetic plus property tests, and this gap is the declared FV-1 refinement note.
+// CEP:ASSUMES: Bounded model: frame counts are bounded per harness (<= 64 or <= 128 as declared), backing stores are fixed-size arrays, per-harness unwind bounds are declared via #[kani::unwind] (4 to 72, annotated on every harness), and the frame-size constant is the x86-64 4 KiB baseline. Bounds are recorded in verification/proof-registry.json; properties beyond the bound are covered by checked arithmetic plus property tests, and this gap is the declared FV-1 refinement note.
 // CEP:COST: proof-time only; cfg(kani) means zero instructions are linked into any kernel or test image.
-// CEP:EVIDENCE: cargo kani -p civ-pmm results recorded in verification/evidence/; registry entries in verification/proof-registry.json.
+// CEP:EVIDENCE: cargo kani -p civ-pmm results UNVERIFIED until a recorded run exists (status in verification/evidence/toolchain.json); registry entries in verification/proof-registry.json.
 // CEP:SECURITY: Harnesses model adversarial inputs with kani::any over full u64 ranges where the threat model (security/threat_model.md TM-1, TM-2) declares untrusted inputs.
 // CEP:FV-CLASS: FV-1
 // CEP:FV-PROVER: Kani (exact version recorded in verification/evidence/toolchain.json at proof time)
@@ -46,7 +46,7 @@ const PROOF_BASE_FRAME: u64 = PROOF_BASE / FRAME_SIZE_BYTES;
 // CEP:FAILURE: A violated property aborts cargo kani with a counterexample; a broken harness precondition panics the harness.
 // CEP:ASSUMES: Declared model bound (file header FV-REFINEMENT and verification/proof-registry.json).
 // CEP:COST: proof-time only; cfg(kani) excludes harnesses from all non-Kani builds.
-// CEP:EVIDENCE: cargo kani -p civ-pmm; results recorded in verification/evidence/.
+// CEP:EVIDENCE: cargo kani -p civ-pmm; results UNVERIFIED until a recorded run exists (status in verification/evidence/toolchain.json).
 #[kani::proof]
 #[kani::unwind(8)]
 fn proof_new_rejects_bad_config_no_panic() {
@@ -96,7 +96,7 @@ fn proof_new_rejects_bad_config_no_panic() {
 // CEP:FAILURE: A violated property aborts cargo kani with a counterexample; a broken harness precondition panics the harness.
 // CEP:ASSUMES: Declared model bound (file header FV-REFINEMENT and verification/proof-registry.json).
 // CEP:COST: proof-time only; cfg(kani) excludes harnesses from all non-Kani builds.
-// CEP:EVIDENCE: cargo kani -p civ-pmm; results recorded in verification/evidence/.
+// CEP:EVIDENCE: cargo kani -p civ-pmm; results UNVERIFIED until a recorded run exists (status in verification/evidence/toolchain.json).
 #[kani::proof]
 #[kani::unwind(72)]
 fn proof_alloc_exhaustion_and_uniqueness() {
@@ -150,8 +150,9 @@ fn proof_alloc_exhaustion_and_uniqueness() {
 // CEP:FAILURE: A violated property aborts cargo kani with a counterexample; a broken harness precondition panics the harness.
 // CEP:ASSUMES: Declared model bound (file header FV-REFINEMENT and verification/proof-registry.json).
 // CEP:COST: proof-time only; cfg(kani) excludes harnesses from all non-Kani builds.
-// CEP:EVIDENCE: cargo kani -p civ-pmm; results recorded in verification/evidence/.
+// CEP:EVIDENCE: cargo kani -p civ-pmm; results UNVERIFIED until a recorded run exists (status in verification/evidence/toolchain.json).
 #[kani::proof]
+#[kani::unwind(4)]
 fn proof_free_validates_untrusted_input() {
     let mut backing = [0u64; 1];
     let mut allocator = FrameAllocator::new(PhysAddr::new(PROOF_BASE), 64, &mut backing).unwrap();
@@ -206,7 +207,7 @@ fn proof_free_validates_untrusted_input() {
 // CEP:FAILURE: A violated property aborts cargo kani with a counterexample; a broken harness precondition panics the harness.
 // CEP:ASSUMES: Declared model bound (file header FV-REFINEMENT and verification/proof-registry.json).
 // CEP:COST: proof-time only; cfg(kani) excludes harnesses from all non-Kani builds.
-// CEP:EVIDENCE: cargo kani -p civ-pmm; results recorded in verification/evidence/.
+// CEP:EVIDENCE: cargo kani -p civ-pmm; results UNVERIFIED until a recorded run exists (status in verification/evidence/toolchain.json).
 #[kani::proof]
 #[kani::unwind(72)]
 fn proof_contiguous_bounds_and_disjoint() {
@@ -256,8 +257,10 @@ fn proof_contiguous_bounds_and_disjoint() {
 /// rejected atomically with state unchanged, and accepted reservations are
 /// never handed out by alloc.
 ///
-/// Model bound: 64 frames; reserved range endpoints are symbolic within the
-/// window.
+/// Model bound: 64 frames; the reserved range lies inside the managed window
+/// (out-of-window classification is covered by unit test
+/// test_reserve_range_out_of_window_rejected, the declared FV-1 refinement
+/// gap for this harness).
 // CEP:ID: MEM-a13
 // CEP:WHAT: Reservation over an allocation is rejected atomically with state unchanged; accepted reservations leave alloc nothing free.
 // CEP:WHY: Discharges reserve atomicity and the reserved-memory isolation property.
@@ -265,8 +268,9 @@ fn proof_contiguous_bounds_and_disjoint() {
 // CEP:FAILURE: A violated property aborts cargo kani with a counterexample; a broken harness precondition panics the harness.
 // CEP:ASSUMES: Declared model bound (file header FV-REFINEMENT and verification/proof-registry.json).
 // CEP:COST: proof-time only; cfg(kani) excludes harnesses from all non-Kani builds.
-// CEP:EVIDENCE: cargo kani -p civ-pmm; results recorded in verification/evidence/.
+// CEP:EVIDENCE: cargo kani -p civ-pmm; results UNVERIFIED until a recorded run exists (status in verification/evidence/toolchain.json).
 #[kani::proof]
+#[kani::unwind(72)]
 fn proof_reserve_conflict_is_atomic() {
     let mut backing = [0u64; 1];
     let mut allocator = FrameAllocator::new(PhysAddr::new(PROOF_BASE), 64, &mut backing).unwrap();
@@ -275,6 +279,7 @@ fn proof_reserve_conflict_is_atomic() {
 
     let start: u64 = kani::any();
     let end: u64 = kani::any();
+    kani::assume(start >= PROOF_BASE_FRAME);
     kani::assume(start < end);
     kani::assume(end <= PROOF_BASE_FRAME + 64);
     let range = FrameRange::new(Frame::new(start), Frame::new(end)).unwrap();
@@ -296,10 +301,21 @@ fn proof_reserve_conflict_is_atomic() {
                 "reserve succeeded over an allocated frame"
             );
             assert_eq!(allocator.allocated_count(), before + range.len());
-            assert!(
-                matches!(allocator.alloc(), Err(PmmError::Exhausted)),
-                "a fully reserved window must have no free frames"
-            );
+            // Drain the remaining window: every returned frame must lie
+            // outside the reserved range, and exhaustion must arrive only
+            // after the drain is complete.
+            let remaining = 64 - (before + range.len());
+            let mut drained = 0;
+            while drained < remaining {
+                let frame = match allocator.alloc() {
+                    Ok(frame) => frame,
+                    Err(err) => panic!("free frames must remain allocatable: {err:?}"),
+                };
+                let outside = frame.number() < start || frame.number() >= end;
+                assert!(outside, "alloc returned a frame inside the reserved range");
+                drained += 1;
+            }
+            assert!(matches!(allocator.alloc(), Err(PmmError::Exhausted)));
         }
         Err(other) => panic!("unexpected error class: {other:?}"),
     }
@@ -317,7 +333,7 @@ fn proof_reserve_conflict_is_atomic() {
 // CEP:FAILURE: A violated property aborts cargo kani with a counterexample; a broken harness precondition panics the harness.
 // CEP:ASSUMES: Declared model bound (file header FV-REFINEMENT and verification/proof-registry.json).
 // CEP:COST: proof-time only; cfg(kani) excludes harnesses from all non-Kani builds.
-// CEP:EVIDENCE: cargo kani -p civ-pmm; results recorded in verification/evidence/.
+// CEP:EVIDENCE: cargo kani -p civ-pmm; results UNVERIFIED until a recorded run exists (status in verification/evidence/toolchain.json).
 #[kani::proof]
 #[kani::unwind(12)]
 fn proof_invariant_popcount_matches_allocated() {
@@ -373,15 +389,16 @@ fn proof_invariant_popcount_matches_allocated() {
 /// single-word state space, exercising word-boundary masking adversarially.
 ///
 /// Model bound: one bitmap word (64 bits); run length 1..=64; window within
-/// the word. Multi-word windows are covered by the allocator-level harnesses.
+/// the word. Multi-word windows are covered by the allocator unit tests (the
+/// declared single-word Kani bound is the refinement gap for this harness).
 // CEP:ID: MEM-a15h
 // CEP:WHAT: Kani harness proving find_zero_run agreement with run_is_zero and minimality of the returned origin over the bounded single-word space.
 // CEP:WHY: First-fit completeness is the property alloc_contiguous relies on; pinning it against the independent verifier on symbolic word values puts the adversarial masking patterns inside the model instead of sampling them.
 // CEP:STATUS: complete
 // CEP:FAILURE: A violated property aborts cargo kani with a counterexample; a broken harness precondition panics the harness.
-// CEP:ASSUMES: One bitmap word (64 bits); run length 1..=64; window within the word; multi-word windows are the declared FV-1 refinement gap covered by allocator-level harnesses.
+// CEP:ASSUMES: One bitmap word (64 bits); run length 1..=64; window within the word; multi-word windows are the declared FV-1 refinement gap covered by the allocator unit tests.
 // CEP:COST: proof-time only; cfg(kani) excludes harnesses from all non-Kani builds.
-// CEP:EVIDENCE: cargo kani -p civ-pmm; results recorded in verification/evidence/.
+// CEP:EVIDENCE: cargo kani -p civ-pmm; results UNVERIFIED until a recorded run exists (status in verification/evidence/toolchain.json).
 #[kani::proof]
 #[kani::unwind(72)]
 fn proof_bitmap_run_search_consistent() {
@@ -450,7 +467,7 @@ fn proof_bitmap_run_search_consistent() {
 // CEP:FAILURE: A violated property aborts cargo kani with a counterexample; a broken harness precondition panics the harness.
 // CEP:ASSUMES: One bitmap word (64 bits); run in 1..=64 within bounds; the free-run precondition is established by run_is_zero inside the harness before every set_run call.
 // CEP:COST: proof-time only; cfg(kani) excludes harnesses from all non-Kani builds.
-// CEP:EVIDENCE: cargo kani -p civ-pmm; results recorded in verification/evidence/.
+// CEP:EVIDENCE: cargo kani -p civ-pmm; results UNVERIFIED until a recorded run exists (status in verification/evidence/toolchain.json).
 #[kani::proof]
 #[kani::unwind(72)]
 fn proof_bitmap_set_run_bounds() {
@@ -461,27 +478,39 @@ fn proof_bitmap_set_run_bounds() {
     let start: u64 = kani::any();
     let run_len: u64 = kani::any();
     kani::assume(run_len >= 1 && run_len <= 64);
-    kani::assume(start + run_len <= 64);
+    // Overflow-safe bound: 64 - run_len >= 0, so the subtraction cannot
+    // wrap and start + run_len <= 64 holds without evaluating an unchecked
+    // addition on a symbolic operand.
+    kani::assume(start <= 64 - run_len);
 
     let free_before = matches!(bitmap.run_is_zero(start, run_len), Ok(true));
     let popcount_before = bitmap.popcount();
-    let result = bitmap.set_run(start, run_len);
-    match result {
-        Ok(()) => {
-            assert!(
-                free_before,
-                "set_run succeeded over a non-free run inside the modeled space"
-            );
-            assert_eq!(bitmap.popcount(), popcount_before + run_len);
-            let mut bit = start;
-            while bit < start + run_len {
-                assert!(matches!(bitmap.get(bit), Ok(true)));
-                bit += 1;
-            }
+    if free_before {
+        // set_run's contract over verified-free runs: exact flip.
+        bitmap.set_run(start, run_len).unwrap();
+        assert_eq!(bitmap.popcount(), popcount_before + run_len);
+        let mut bit = start;
+        while bit < start + run_len {
+            assert!(matches!(bitmap.get(bit), Ok(true)));
+            bit += 1;
         }
-        Err(_) => {
-            assert!(!free_before, "Err over a verified-free run inside bounds");
-            assert_eq!(bitmap.popcount(), popcount_before, "failed set_run mutated");
-        }
+    } else {
+        // set_run's precondition is a verified-free run, enforced by a
+        // debug assertion that traps on violation; the harness therefore
+        // must not call it over a non-free run. Structural rejections are
+        // covered by the concrete calls below.
+        assert!(matches!(
+            bitmap.set_run(0, 0),
+            Err(PmmError::InvalidArgument)
+        ));
+        assert!(matches!(
+            bitmap.set_run(64, 1),
+            Err(PmmError::InvalidArgument)
+        ));
+        assert!(matches!(
+            bitmap.set_run(u64::MAX, 1),
+            Err(PmmError::Overflow)
+        ));
+        assert_eq!(bitmap.popcount(), popcount_before, "failed set_run mutated");
     }
 }

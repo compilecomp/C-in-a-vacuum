@@ -40,9 +40,9 @@ impl PhysAddr {
     // CEP:FAILURE: none; total function.
     // CEP:ASSUMES: none; the value itself carries no precondition, consumers validate.
     // CEP:COST: O(1); single register move, no allocation.
-    // CEP:EVIDENCE: cargo test -p civ-pmm frame_address_roundtrip.
+    // CEP:EVIDENCE: cargo test -p civ-pmm test_frame_address_roundtrip.
     // CEP:OPTIMAL: lower-bound optimal
-    // CEP:OPTPROOF: the observable behavior is exactly one wrap; any implementation performs the same single move.
+    // CEP:OPTPROOF: the observable behavior is exactly one wrap; any implementation performs the same single move. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
     #[inline]
     pub const fn new(addr: u64) -> Self {
         Self(addr)
@@ -55,9 +55,9 @@ impl PhysAddr {
     // CEP:FAILURE: none; total function.
     // CEP:ASSUMES: none.
     // CEP:COST: O(1); single register move.
-    // CEP:EVIDENCE: cargo test -p civ-pmm frame_address_roundtrip.
+    // CEP:EVIDENCE: cargo test -p civ-pmm test_frame_address_roundtrip.
     // CEP:OPTIMAL: lower-bound optimal
-    // CEP:OPTPROOF: identity projection; no cheaper implementation exists.
+    // CEP:OPTPROOF: identity projection; no cheaper implementation exists. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
     #[inline]
     pub const fn as_u64(self) -> u64 {
         self.0
@@ -205,7 +205,7 @@ impl FrameRange {
 
     /// Number of frames covered; zero for an empty range.
     // CEP:WHAT: Returns the length of the range in frames.
-    // CEP:WHY: Accounting (design.md 4.1 free-page accounting) operates on lengths; the subtraction is safe because construction validated ordering.
+    // CEP:WHY: Accounting (design.md 1.3 Algorithms: free-page accounting) operates on lengths; the subtraction is safe because construction validated ordering.
     // CEP:STATUS: complete
     // CEP:FAILURE: none; total; the subtraction cannot underflow because end >= start holds by construction.
     // CEP:ASSUMES: The range was produced by FrameRange::new or a literal with end >= start; enforced by construction.
