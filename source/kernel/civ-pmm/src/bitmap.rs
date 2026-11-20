@@ -30,7 +30,8 @@ pub const BITS_PER_WORD: u64 = 64;
 /// slice length can panic during capacity computation.
 #[derive(Debug)]
 pub struct Bitmap<'a> {
-    words: &'a mut [u64],
+    // Crate-visible for the CEP-SMT-01 transactionality state witness.
+    pub(crate) words: &'a mut [u64],
 }
 
 impl<'a> Bitmap<'a> {

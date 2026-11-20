@@ -50,6 +50,21 @@ section 2, critical limitation.
 5. Record tool versions into verification/evidence/toolchain.json before regenerating
    evidence; evidence without a tool version is invalid (proof registry contract).
 
+## CEP-SMT-01 adoption
+
+Every registered proof is a property-directed bounded search per
+SOLVER-TOOLING.md (CEP-SMT-01): each harness names one property (property
+IDs P-MM-*/P-CS-* in the registry), declares its input domain and search
+budget (section 2.2 defaults, justified per harness), and produces a
+section-8 report under verification/smt/. Result classifications follow
+section 2.3: only an actual tool run produces a classification; pending
+runs are UNVERIFIED and never reported as success. Evidence classes follow
+section 9: all current harnesses target E2 (all modeled paths within the
+stated bounds satisfy the property); a bounded UNSAT result will never be
+promoted to E4. The transactionality profile (section 4) is discharged by
+the proof_operations_are_transactional harnesses with complete state
+witnesses including scan hints and slot entries.
+
 ## Evidence integrity
 
 Evidence files under verification/evidence/ record command output verbatim plus a

@@ -32,10 +32,11 @@ use crate::rights::{Rights, RIGHT_GRANT};
 // CEP:SECURITY: Slot contents are the stored authority; private fields prevent forgery of occupancy or generation outside the table.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct SlotEntry {
-    rights: Rights,
-    object: u64,
-    generation: u32,
-    allocated: bool,
+    // Crate-visible for the CEP-SMT-01 transactionality state witness.
+    pub(crate) rights: Rights,
+    pub(crate) object: u64,
+    pub(crate) generation: u32,
+    pub(crate) allocated: bool,
 }
 
 impl SlotEntry {
@@ -144,8 +145,9 @@ impl Handle {
 // CEP:SECURITY: The kernel authority boundary (design.md 9.1, TM-3); cascading revocation is the declared subset (crate docs).
 #[derive(Debug)]
 pub struct CapabilityTable<'a> {
-    slots: &'a mut [SlotEntry],
-    allocated: u64,
+    // Crate-visible for the CEP-SMT-01 transactionality state witness.
+    pub(crate) slots: &'a mut [SlotEntry],
+    pub(crate) allocated: u64,
 }
 
 impl<'a> CapabilityTable<'a> {

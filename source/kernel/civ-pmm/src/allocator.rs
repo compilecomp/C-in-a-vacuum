@@ -22,11 +22,14 @@ use crate::frame::{Frame, FrameRange, PhysAddr, FRAME_SIZE_BYTES};
 /// single-frame allocation when freed frames are reused promptly.
 #[derive(Debug)]
 pub struct FrameAllocator<'a> {
-    base_frame: u64,
-    frame_count: u64,
-    bitmap: Bitmap<'a>,
-    allocated: u64,
-    scan_hint: u64,
+    // Fields are crate-visible so the proof harnesses can take the complete
+    // state snapshots that the CEP-SMT-01 transactionality property requires
+    // (S1 == S0 over every mutable field, not just the public counter).
+    pub(crate) base_frame: u64,
+    pub(crate) frame_count: u64,
+    pub(crate) bitmap: Bitmap<'a>,
+    pub(crate) allocated: u64,
+    pub(crate) scan_hint: u64,
 }
 
 impl<'a> FrameAllocator<'a> {

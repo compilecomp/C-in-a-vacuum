@@ -333,3 +333,54 @@ fn proof_invariant_slots_consistent() {
         "final state drifted from slot occupancy"
     );
 }
+
+/// Harness: transactionality of every fallible capability operation
+/// (CEP-SMT-01 PROFILE: TRANSACTIONALITY).
+///
+/// Property (CEP-SMT-01 2.1): for every fallible operation,
+/// `R = Err => S1 == S0` where the state comparison covers every mutable
+/// field: all slot entries (rights, object, generation, occupancy) and the
+/// accounting counter.
+///
+/// Model bound: 4-slot table, symbolic operation sequence over symbolic
+/// handles and rights.
+// CEP:ID: CS-a15
+// CEP:WHAT: Kani harness proving transactionality of every fallible capability operation per the CEP-SMT-01 transactionality profile.
+// CEP:WHY: The state comparison covers all slot entries and the accounting counter; symbolic alloc, derive, and revoke over symbolic handles discharge the failed-operation-preserves-state obligation for the authority boundary.
+// CEP:STATUS: complete
+// CEP:FAILURE: A violated property aborts cargo kani with a counterexample; a broken harness precondition panics the harness.
+// CEP:ASSUMES: Bounded model: 4-slot table, one live capability, three symbolic operations (see verification/smt/ reports).
+// CEP:COST: proof-time only; cfg(kani) excludes harnesses from all non-Kani builds.
+// CEP:EVIDENCE: cargo kani -p civ-capability; results UNVERIFIED until a recorded run exists (status in verification/evidence/toolchain.json); report in verification/smt/CS-a15.report.md.
+#[kani::proof]
+#[kani::unwind(16)]
+fn proof_operations_are_transactional() {
+    let mut backing = [SlotEntry::empty(); CAPACITY];
+    let mut table = CapabilityTable::new(&mut backing).unwrap();
+    let live = table.alloc(0xABCD, Rights::all()).unwrap();
+
+    let mut step = 0;
+    while step < 3 {
+        let snapshot_slots = *table.slots;
+        let snapshot_allocated = table.allocated;
+
+        let operation: u8 = kani::any();
+        let handle = Handle::pack(kani::any(), kani::any());
+        let rights = Rights::from_raw(kani::any());
+        let result = match operation % 3 {
+            0 => table.alloc(kani::any(), rights).map(|h| h.as_raw()),
+            1 => table.derive(handle, rights).map(|h| h.as_raw()),
+            _ => table.revoke(handle).map(|_| ()),
+        };
+        if result.is_err() {
+            // CEP-SMT-01 transactionality predicate over the complete state.
+            assert_eq!(*table.slots, snapshot_slots, "slots mutated on Err");
+            assert_eq!(
+                table.allocated, snapshot_allocated,
+                "counter mutated on Err"
+            );
+        }
+        let _ = live;
+        step += 1;
+    }
+}

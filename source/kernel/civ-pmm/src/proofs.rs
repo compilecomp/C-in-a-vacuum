@@ -514,3 +514,82 @@ fn proof_bitmap_set_run_bounds() {
         assert_eq!(bitmap.popcount(), popcount_before, "failed set_run mutated");
     }
 }
+
+/// Harness: transactionality of every fallible allocator operation
+/// (CEP-SMT-01 PROFILE: TRANSACTIONALITY, section 5 allocator example).
+///
+/// Property (CEP-SMT-01 2.1/5): for every fallible operation,
+/// `R = Err => S1 == S0` where the state comparison covers EVERY mutable
+/// field relevant to the contract: all bitmap words, the allocation
+/// counter, and the scan hint. Checking only the externally visible
+/// allocation count is insufficient per section 2.1.
+///
+/// Model bound: 64 frames (single-word backing), four nondeterministically
+/// chosen operations over symbolic arguments.
+// CEP:ID: MEM-a19
+// CEP:WHAT: Kani harness proving transactionality of every fallible allocator operation per the CEP-SMT-01 transactionality profile.
+// CEP:WHY: SOLVER-TOOLING.md section 5 names this exact property for FrameAllocator; the state comparison covers all bitmap words, the counter, and the scan hint as the standard requires, discharging the failed-operation-preserves-state obligation mechanically.
+// CEP:STATUS: complete
+// CEP:FAILURE: A violated property aborts cargo kani with a counterexample; a broken harness precondition panics the harness.
+// CEP:ASSUMES: Bounded model: 64 frames, single-word backing, three symbolic operations over symbolic arguments (see verification/smt/ reports).
+// CEP:COST: proof-time only; cfg(kani) excludes harnesses from all non-Kani builds.
+// CEP:EVIDENCE: cargo kani -p civ-pmm; results UNVERIFIED until a recorded run exists (status in verification/evidence/toolchain.json); report in verification/smt/MEM-a19.report.md.
+#[kani::proof]
+#[kani::unwind(72)]
+fn proof_operations_are_transactional() {
+    let count: u64 = kani::any();
+    kani::assume(count > 0 && count <= 64);
+    let mut backing = [0u64; 1];
+    let mut allocator =
+        FrameAllocator::new(PhysAddr::new(PROOF_BASE), count, &mut backing).unwrap();
+    // Establish a non-trivial symbolic state: allocate two frames and free
+    // one, so the bitmap, counter, and hint are all exercised.
+    let first = allocator.alloc().unwrap();
+    let second = allocator.alloc().unwrap();
+    allocator.free(first).unwrap();
+
+    let mut step = 0;
+    while step < 3 {
+        let snapshot_words = allocator.bitmap.words[0];
+        let snapshot_allocated = allocator.allocated;
+        let snapshot_hint = allocator.scan_hint;
+
+        let operation: u8 = kani::any();
+        let argument: u64 = kani::any();
+        let result = match operation % 4 {
+            0 => allocator
+                .free(Frame::new(PROOF_BASE_FRAME + (argument % count.max(1))))
+                .map(|_| ()),
+            1 => allocator.alloc().map(|frame| frame.number()),
+            2 => allocator
+                .alloc_contiguous((argument % count.max(1)).max(1))
+                .map(|range| range.len()),
+            _ => allocator
+                .reserve_range(
+                    FrameRange::new(
+                        Frame::new(PROOF_BASE_FRAME + (argument % count.max(1))),
+                        Frame::new(PROOF_BASE_FRAME + count),
+                    )
+                    .unwrap(),
+                )
+                .map(|_| ()),
+        };
+        if result.is_err() {
+            // CEP-SMT-01 transactionality predicate over the complete state.
+            assert_eq!(
+                allocator.bitmap.words[0], snapshot_words,
+                "bitmap mutated on Err"
+            );
+            assert_eq!(
+                allocator.allocated, snapshot_allocated,
+                "counter mutated on Err"
+            );
+            assert_eq!(
+                allocator.scan_hint, snapshot_hint,
+                "scan hint mutated on Err"
+            );
+        }
+        let _ = second;
+        step += 1;
+    }
+}

@@ -72,6 +72,16 @@
       "summary": "test_handle_high_bits_forgery"
     },
     {
+      "id": "MEM-a19",
+      "domain": "MEM",
+      "summary": "proof_operations_are_transactional"
+    },
+    {
+      "id": "CS-a15",
+      "domain": "CS",
+      "summary": "proof_operations_are_transactional"
+    },
+    {
       "id": "MEM-a01",
       "domain": "MEM",
       "summary": "FrameAllocator::new"
