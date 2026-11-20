@@ -55,6 +55,9 @@ Explicit statements of what the component does not handle, edge cases that degra
 ### Bad (Prohibited)
 > **The Ultimate Borrow Checker**
 > Let's dive into our revolutionary borrow checker! It seamlessly integrates with the Sea of Nodes to provide massive performance gains. Unlike other compilers, it perfectly handles all edge cases without breaking a sweat. Note that it uses a highly optimized bitset propagation method.
+> user says this "blah blah blah"
+> nobody needs to know what the user says if your an ai.
+> focus on the job. not what people say.
 
 ### Good (Required)
 > **Borrow Checker**
