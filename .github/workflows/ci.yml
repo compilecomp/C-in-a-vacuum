@@ -1,0 +1,70 @@
+// CEP:FILE: .github/workflows/ci.yml
+// CEP:WHAT: The per-commit CI pipeline: build, clippy, tests, linter gates, DOC-SYNC, and self-test over the whole workspace.
+// CEP:WHY: Standards 16 and 50.6 require mechanical enforcement on every commit; design.md CIV-REQ-013 requires reproducible build evidence.
+// CEP:CLASS: CEP-2
+// CEP:STATUS: complete
+// CEP:FAILURE: Any failing gate blocks the merge (exit non-zero).
+// CEP:ASSUMES: GitHub Actions runner with the pinned stable toolchain; Kani runs are a separate manual step until the CI budget allows the toolchain download.
+// CEP:COST: CI time only; not part of the kernel image.
+// CEP:EVIDENCE: each push to main runs this pipeline; results in the Actions tab.
+// CEP:SECURITY: No secrets in the workflow; token-free; pinned toolchain.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-D warnings"
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pinned toolchain
+        run: |
+          rustup toolchain install 1.100.0 --profile minimal
+          rustup default 1.100.0
+          rustup component add clippy rustfmt
+
+      - name: Build (warnings as errors)
+        run: cargo build --workspace
+
+      - name: Clippy (all targets, warnings as errors)
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Tests (workspace, 64 scenarios)
+        run: cargo test --workspace
+
+      - name: cep_lint self-test (45 scenarios)
+        run: cargo run -p cep_lint -- --self-test
+
+      - name: cep_lint self-lint gate
+        run: cargo run -p cep_lint -- tools/cep_lint/src
+
+      - name: cep_lint kernel scan
+        run: cargo run -p cep_lint -- source/
+
+      - name: DOC-SYNC live gate
+        run: cargo run -p cep_lint -- .cep/cep_lint.json
+
+      - name: Rustdoc (document-private-items)
+        run: cargo doc --workspace --no-deps --document-private-items
+
+      - name: Rustfmt check
+        run: cargo fmt --workspace -- --check
+
+  # Kani bounded model checking runs separately (large toolchain download);
+  # all 15 harnesses are registered in verification/proof-registry.json with
+  # reproduction instructions. Enable when the runner budget allows.
+  # kani:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - run: cargo install --locked kani-verifier && cargo kani setup
+  #     - run: cargo kani --workspace
