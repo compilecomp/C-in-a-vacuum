@@ -1,0 +1,11 @@
+[package]
+name = "civ-capability"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "CIV capability table: rights, attenuation-only derivation, revocation (design.md 9.1)"
+
+[dependencies]
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(kani)'] }

@@ -1,4 +1,42 @@
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running unittests src/lib.rs (target/debug/build/civ-capability/08a2cea3508debbf/out/civ_capability-08a2cea3508debbf)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/capability_tests.rs (target/debug/build/civ-capability/2d2e2d6c29328f2d/out/capability_tests-2d2e2d6c29328f2d)
+
+running 26 tests
+test test_alloc_distinct_slots ... ok
+test test_alloc_returns_usable_handle ... ok
+test test_allocated_count_consistency ... ok
+test test_capability_error_display ... ok
+test test_derive_attenuates ... ok
+test test_derive_empty_rights_legal ... ok
+test test_derive_invalid_parent_fails_closed ... ok
+test test_derive_refuses_escalation ... ok
+test test_derive_requires_grant_right ... ok
+test test_derive_state_unchanged_on_error ... ok
+test test_forged_generation_fails ... ok
+test test_full_lifecycle ... ok
+test test_handle_high_bits_forgery ... ok
+test test_handle_roundtrip_encoding ... ok
+test test_lookup_fail_closed ... ok
+test test_revoke_closes_access ... ok
+test test_revoke_state_unchanged_on_error ... ok
+test test_rights_display_names_held_rights ... ok
+test test_rights_from_raw_roundtrip ... ok
+test test_rights_named_bits_distinct ... ok
+test test_rights_none_attenuation_legal ... ok
+test test_stale_handle_fails_closed ... ok
+test test_table_exhaustion_exact ... ok
+test test_table_initializes_backing ... ok
+test test_table_rejects_empty_backing ... ok
+test test_derive_full_space_never_escalates ... ok
+
+test result: ok. 26 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
      Running unittests src/lib.rs (target/debug/build/civ-pmm/344cd94f9b4ce9e8/out/civ_pmm-344cd94f9b4ce9e8)
 
 running 0 tests
@@ -9,17 +47,17 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 
 running 33 tests
 test test_alloc_contiguous_after_fragmentation ... ok
-test test_alloc_contiguous_first_fit_layout ... ok
 test test_alloc_contiguous_full_capacity ... ok
+test test_alloc_contiguous_first_fit_layout ... ok
 test test_alloc_contiguous_oversized_rejected ... ok
 test test_alloc_contiguous_rejects_after_exhaustion ... ok
 test test_alloc_contiguous_zero_len_rejected ... ok
 test test_alloc_exhaustion_exact ... ok
 test test_alloc_free_roundtrip ... ok
 test test_alloc_hint_wrap ... ok
-test test_alloc_returns_disjoint_frames ... ok
 test test_bitmap_direct_out_of_bounds_rejected ... ok
 test test_bitmap_find_zero_patterns ... ok
+test test_alloc_returns_disjoint_frames ... ok
 test test_bitmap_out_of_bounds_rejected ... ok
 test test_boundary_first_and_last_frame ... ok
 test test_double_free_rejected ... ok
@@ -43,6 +81,12 @@ test test_reserve_range_then_alloc_skips ... ok
 test test_stats_consistency ... ok
 
 test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests civ_capability
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
    Doc-tests civ_pmm
 

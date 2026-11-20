@@ -2,6 +2,76 @@
   "registry_version": 2,
   "functions": [
     {
+      "id": "CS-a01",
+      "domain": "CS",
+      "summary": "CapabilityTable::new"
+    },
+    {
+      "id": "CS-a02",
+      "domain": "CS",
+      "summary": "CapabilityTable::alloc"
+    },
+    {
+      "id": "CS-a03",
+      "domain": "CS",
+      "summary": "CapabilityTable::derive"
+    },
+    {
+      "id": "CS-a04",
+      "domain": "CS",
+      "summary": "CapabilityTable::revoke"
+    },
+    {
+      "id": "CS-a05",
+      "domain": "CS",
+      "summary": "CapabilityTable::lookup"
+    },
+    {
+      "id": "CS-a06",
+      "domain": "CS",
+      "summary": "CapabilityTable::allocated_popcount"
+    },
+    {
+      "id": "CS-a07",
+      "domain": "CS",
+      "summary": "Rights::Display"
+    },
+    {
+      "id": "CS-a08",
+      "domain": "CS",
+      "summary": "proof_derive_never_escalates"
+    },
+    {
+      "id": "CS-a09",
+      "domain": "CS",
+      "summary": "proof_lookup_fail_closed"
+    },
+    {
+      "id": "CS-a10",
+      "domain": "CS",
+      "summary": "proof_revoke_closes_access"
+    },
+    {
+      "id": "CS-a11",
+      "domain": "CS",
+      "summary": "proof_handle_space_no_panic"
+    },
+    {
+      "id": "CS-a12",
+      "domain": "CS",
+      "summary": "proof_invariant_slots_consistent"
+    },
+    {
+      "id": "CS-a13",
+      "domain": "CS",
+      "summary": "test_derive_full_space_never_escalates"
+    },
+    {
+      "id": "CS-a14",
+      "domain": "CS",
+      "summary": "test_handle_high_bits_forgery"
+    },
+    {
       "id": "MEM-a01",
       "domain": "MEM",
       "summary": "FrameAllocator::new"

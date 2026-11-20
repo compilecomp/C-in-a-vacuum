@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
     "source/kernel/civ-pmm",
+    "source/kernel/civ-capability",
 ]
 
 [workspace.package]

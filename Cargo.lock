@@ -3,5 +3,9 @@
 version = 4
 
 [[package]]
+name = "civ-capability"
+version = "0.1.0"
+
+[[package]]
 name = "civ-pmm"
 version = "0.1.0"
