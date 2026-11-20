@@ -1,0 +1,16 @@
+[workspace]
+resolver = "2"
+members = [
+    "source/kernel/civ-pmm",
+    "source/kernel/civ-capability",
+    "tools/cep_lint",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1

@@ -1,0 +1,6 @@
+# CEP&CC 6.5 deterministic builds: pinned toolchain, identical output for identical inputs.
+# Compiler version registry entry (design.md 13.4): rustc 1.100.0.
+[toolchain]
+channel = "1.100.0"
+profile = "minimal"
+components = ["clippy", "rustfmt"]
