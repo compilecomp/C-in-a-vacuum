@@ -3,6 +3,10 @@
 version = 4
 
 [[package]]
+name = "cep_lint"
+version = "0.1.0"
+
+[[package]]
 name = "civ-capability"
 version = "0.1.0"
 

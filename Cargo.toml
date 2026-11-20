@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "source/kernel/civ-pmm",
     "source/kernel/civ-capability",
+    "tools/cep_lint",
 ]
 
 [workspace.package]

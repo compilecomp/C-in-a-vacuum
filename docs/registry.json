@@ -2,6 +2,186 @@
   "registry_version": 2,
   "functions": [
     {
+      "id": "CS-a16",
+      "domain": "CS",
+      "summary": "cep_lint scan_targets"
+    },
+    {
+      "id": "CS-a17",
+      "domain": "CS",
+      "summary": "cep_lint run_scan_level_rules"
+    },
+    {
+      "id": "CS-a18",
+      "domain": "CS",
+      "summary": "cep_lint run_one_rule"
+    },
+    {
+      "id": "CS-a19",
+      "domain": "CS",
+      "summary": "cep_lint check_file_header"
+    },
+    {
+      "id": "CS-a20",
+      "domain": "CS",
+      "summary": "cep_lint check_function_block"
+    },
+    {
+      "id": "CS-a21",
+      "domain": "CS",
+      "summary": "cep_lint check_function_id"
+    },
+    {
+      "id": "CS-a22",
+      "domain": "CS",
+      "summary": "cep_lint check_name_validation"
+    },
+    {
+      "id": "CS-a23",
+      "domain": "CS",
+      "summary": "cep_lint check_doc_sync"
+    },
+    {
+      "id": "CS-a24",
+      "domain": "CS",
+      "summary": "cep_lint check_rosetta_registry"
+    },
+    {
+      "id": "CS-a25",
+      "domain": "CS",
+      "summary": "cep_lint run_self_test"
+    },
+    {
+      "id": "CS-a26",
+      "domain": "CS",
+      "summary": "cep_lint Json::parse"
+    },
+    {
+      "id": "CS-a27",
+      "domain": "CS",
+      "summary": "cep_lint Parser::parse_value"
+    },
+    {
+      "id": "CS-a28",
+      "domain": "CS",
+      "summary": "cep_lint Parser::parse_string"
+    },
+    {
+      "id": "CS-a29",
+      "domain": "CS",
+      "summary": "cep_lint Parser::parse_array"
+    },
+    {
+      "id": "CS-a30",
+      "domain": "CS",
+      "summary": "cep_lint Parser::parse_object"
+    },
+    {
+      "id": "CS-a31",
+      "domain": "CS",
+      "summary": "cep_lint config::load"
+    },
+    {
+      "id": "CS-a32",
+      "domain": "CS",
+      "summary": "cep_lint run_one_doc_rule"
+    },
+    {
+      "id": "CS-a33",
+      "domain": "CS",
+      "summary": "cep_lint check_comment_regex"
+    },
+    {
+      "id": "CS-a34",
+      "domain": "CS",
+      "summary": "cep_lint check_string_regex"
+    },
+    {
+      "id": "CS-a35",
+      "domain": "CS",
+      "summary": "cep_lint check_numeric_literals"
+    },
+    {
+      "id": "CS-a36",
+      "domain": "CS",
+      "summary": "cep_lint check_macro_prefix"
+    },
+    {
+      "id": "CS-a37",
+      "domain": "CS",
+      "summary": "cep_lint check_file_topology"
+    },
+    {
+      "id": "CS-a38",
+      "domain": "CS",
+      "summary": "cep_lint check_secret_probe"
+    },
+    {
+      "id": "CS-a39",
+      "domain": "CS",
+      "summary": "cep_lint check_unsafe_doc"
+    },
+    {
+      "id": "CS-a40",
+      "domain": "CS",
+      "summary": "cep_lint collect_block"
+    },
+    {
+      "id": "CS-a41",
+      "domain": "CS",
+      "summary": "cep_lint count_body"
+    },
+    {
+      "id": "CS-a42",
+      "domain": "CS",
+      "summary": "cep_lint function::extract"
+    },
+    {
+      "id": "CS-a43",
+      "domain": "CS",
+      "summary": "cep_lint strip_line"
+    },
+    {
+      "id": "CS-a44",
+      "domain": "CS",
+      "summary": "cep_lint run"
+    },
+    {
+      "id": "CS-a45",
+      "domain": "CS",
+      "summary": "cep_lint match_node"
+    },
+    {
+      "id": "CS-a46",
+      "domain": "CS",
+      "summary": "cep_lint parse_atom"
+    },
+    {
+      "id": "CS-a47",
+      "domain": "CS",
+      "summary": "cep_lint parse_class"
+    },
+    {
+      "id": "CS-a48",
+      "domain": "CS",
+      "summary": "cep_lint parse_quantifier"
+    },
+    {
+      "id": "CS-a49",
+      "domain": "CS",
+      "summary": "cep_lint parse_alt"
+    },
+    {
+      "id": "CS-a50",
+      "domain": "CS",
+      "summary": "cep_lint parse_concat"
+    },
+    {
+      "id": "CS-b01",
+      "domain": "CS",
+      "summary": "cep_lint count_rule_findings"
+    },
+    {
       "id": "CS-a01",
       "domain": "CS",
       "summary": "CapabilityTable::new"
@@ -80,6 +260,146 @@
       "id": "CS-a15",
       "domain": "CS",
       "summary": "proof_operations_are_transactional"
+    },
+    {
+      "id": "CS-a16",
+      "domain": "CS",
+      "summary": "cep_lint scan_targets"
+    },
+    {
+      "id": "CS-a17",
+      "domain": "CS",
+      "summary": "cep_lint run_scan_level_rules"
+    },
+    {
+      "id": "CS-a18",
+      "domain": "CS",
+      "summary": "cep_lint run_one_rule"
+    },
+    {
+      "id": "CS-a19",
+      "domain": "CS",
+      "summary": "cep_lint check_file_header"
+    },
+    {
+      "id": "CS-a20",
+      "domain": "CS",
+      "summary": "cep_lint check_function_block"
+    },
+    {
+      "id": "CS-a21",
+      "domain": "CS",
+      "summary": "cep_lint check_function_id"
+    },
+    {
+      "id": "CS-a22",
+      "domain": "CS",
+      "summary": "cep_lint check_name_validation"
+    },
+    {
+      "id": "CS-a23",
+      "domain": "CS",
+      "summary": "cep_lint check_doc_sync"
+    },
+    {
+      "id": "CS-a24",
+      "domain": "CS",
+      "summary": "cep_lint check_rosetta_registry"
+    },
+    {
+      "id": "CS-a25",
+      "domain": "CS",
+      "summary": "cep_lint run_self_test"
+    },
+    {
+      "id": "CS-a26",
+      "domain": "CS",
+      "summary": "cep_lint Json::parse"
+    },
+    {
+      "id": "CS-a27",
+      "domain": "CS",
+      "summary": "cep_lint Parser::parse_value"
+    },
+    {
+      "id": "CS-a28",
+      "domain": "CS",
+      "summary": "cep_lint Parser::parse_string"
+    },
+    {
+      "id": "CS-a29",
+      "domain": "CS",
+      "summary": "cep_lint Parser::parse_array"
+    },
+    {
+      "id": "CS-a30",
+      "domain": "CS",
+      "summary": "cep_lint Parser::parse_object"
+    },
+    {
+      "id": "CS-a31",
+      "domain": "CS",
+      "summary": "cep_lint config::load"
+    },
+    {
+      "id": "CS-a32",
+      "domain": "CS",
+      "summary": "cep_lint run_one_doc_rule"
+    },
+    {
+      "id": "CS-a33",
+      "domain": "CS",
+      "summary": "cep_lint check_comment_regex"
+    },
+    {
+      "id": "CS-a34",
+      "domain": "CS",
+      "summary": "cep_lint check_string_regex"
+    },
+    {
+      "id": "CS-a35",
+      "domain": "CS",
+      "summary": "cep_lint check_numeric_literals"
+    },
+    {
+      "id": "CS-a36",
+      "domain": "CS",
+      "summary": "cep_lint check_macro_prefix"
+    },
+    {
+      "id": "CS-a37",
+      "domain": "CS",
+      "summary": "cep_lint check_file_topology"
+    },
+    {
+      "id": "CS-a38",
+      "domain": "CS",
+      "summary": "cep_lint check_secret_probe"
+    },
+    {
+      "id": "CS-a39",
+      "domain": "CS",
+      "summary": "cep_lint check_unsafe_doc"
+    },
+    {
+      "id": "CS-a40",
+      "domain": "CS",
+      "summary": "cep_lint collect_block"
+    },
+    {
+      "id": "CS-a41",
+      "domain": "CS",
+      "summary": "cep_lint count_body"
+    },
+    {
+      "id": "CS-a42",
+      "domain": "CS",
+      "summary": "cep_lint function::extract"
+    },
+    {
+      "id": "CS-a43",
+      "domain": "CS",
+      "summary": "cep_lint strip_line"
     },
     {
       "id": "MEM-a01",

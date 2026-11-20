@@ -2,8 +2,13 @@
   "standard.version": "0.4",
   "tool.name": "cep_lint",
   "tool.version": "0.4.0",
-  "file_globs": ["*.rs"],
-  "fail_on": [0, 1],
+  "file_globs": [
+    "*.rs"
+  ],
+  "fail_on": [
+    0,
+    1
+  ],
   "doc_sync": {
     "doc_path": "standards.md",
     "heading_pattern": "^### Rule (CEP-LINT-[A-Z-]+)$",
@@ -14,16 +19,49 @@
       "severity": 1,
       "check": "comment_block_schema",
       "mode": "file_header",
-      "required_fields": ["CEP:FILE", "CEP:WHAT", "CEP:WHY", "CEP:CLASS", "CEP:STATUS", "CEP:FAILURE", "CEP:ASSUMES", "CEP:COST", "CEP:EVIDENCE"],
+      "required_fields": [
+        "CEP:FILE",
+        "CEP:WHAT",
+        "CEP:WHY",
+        "CEP:CLASS",
+        "CEP:STATUS",
+        "CEP:FAILURE",
+        "CEP:ASSUMES",
+        "CEP:COST",
+        "CEP:EVIDENCE"
+      ],
       "class_field": "CEP:CLASS",
-      "allowed_classes": ["CEP-0", "CEP-1", "CEP-2", "CC", "FFI", "HPC-0", "HPC-1", "HPC-2", "RCS-0", "RCS-1", "RCS-2", "FV-0", "FV-1", "FV-2"],
+      "allowed_classes": [
+        "CEP-0",
+        "CEP-1",
+        "CEP-2",
+        "CC",
+        "FFI",
+        "HPC-0",
+        "HPC-1",
+        "HPC-2",
+        "RCS-0",
+        "RCS-1",
+        "RCS-2",
+        "FV-0",
+        "FV-1",
+        "FV-2"
+      ],
       "max_start_line": 1
     },
     "CEP-LINT-FUNC-BLOCK": {
       "severity": 1,
       "check": "function_policy",
       "mode": "block",
-      "required_fields": ["CEP:WHAT", "CEP:WHY", "CEP:STATUS", "CEP:FAILURE", "CEP:ASSUMES", "CEP:COST", "CEP:EVIDENCE"],
+      "required_fields": [
+        "CEP:WHAT",
+        "CEP:WHY",
+        "CEP:STATUS",
+        "CEP:FAILURE",
+        "CEP:ASSUMES",
+        "CEP:COST",
+        "CEP:EVIDENCE"
+      ],
       "min_body_statements": 2,
       "gap_pattern": "^(#\\[|///|\\}\\)|where|->|pub fn|fn |unsafe fn|const fn|extern )",
       "require_block_for_lambdas": false
@@ -33,7 +71,12 @@
       "check": "comment_block_schema",
       "mode": "status_value",
       "status_field": "CEP:STATUS",
-      "allowed_values": ["complete", "partial", "stub", "placeholder"]
+      "allowed_values": [
+        "complete",
+        "partial",
+        "stub",
+        "placeholder"
+      ]
     },
     "CEP-LINT-TODO-OWNER": {
       "severity": 1,
@@ -41,15 +84,22 @@
       "scope": "line",
       "pattern": "(TODO|FIXME|XXX|HACK)",
       "icase": true,
-      "suppression_pattern": "CEP:TODO\\([^)]*\\):\\s*CEP-[A-Z0-9]+:"
+      "suppression_pattern": "^CEP:TODO\\([^)]*\\):\\s*CEP-[A-Z0-9]+:"
     },
     "CEP-LINT-STUB-DECL": {
       "severity": 1,
       "check": "comment_block_schema",
       "mode": "stub_requirements",
       "status_field": "CEP:STATUS",
-      "statuses": ["stub", "partial", "placeholder"],
-      "required_fields": ["CEP:OWNER", "CEP:TICKET"]
+      "statuses": [
+        "stub",
+        "partial",
+        "placeholder"
+      ],
+      "required_fields": [
+        "CEP:OWNER",
+        "CEP:TICKET"
+      ]
     },
     "CEP-LINT-PLACEHOLDER-COMMENT": {
       "severity": 1,
@@ -57,7 +107,7 @@
       "scope": "line",
       "pattern": "(not implemented|unimplemented|placeholder|fixme|tbd|wip)",
       "icase": true,
-      "suppression_pattern": "^\\s*//\\s*CEP:"
+      "suppression_pattern": "^\\s*CEP:"
     },
     "CEP-LINT-PLACEHOLDER-TEXT": {
       "severity": 1,
@@ -68,8 +118,19 @@
     "CEP-LINT-MAGIC-NUMBER": {
       "severity": 2,
       "check": "numeric_literal_policy",
-      "allowed_values": [0, 1],
-      "exempt_contexts": ["\\bconst\\b", "\\bstatic\\b", "\\benum\\b", "\\bstruct\\b", "#\\[", "^\\s*//"]
+      "allowed_values": [
+        0,
+        1
+      ],
+      "exempt_contexts": [
+        "\\bconst\\b",
+        "\\bstatic\\b",
+        "\\benum\\b",
+        "\\bstruct\\b",
+        "#\\[",
+        "^\\s*//",
+        "\\\\.\\."
+      ]
     },
     "CEP-LINT-MACRO-PREFIX": {
       "severity": 2,
@@ -80,16 +141,44 @@
     "CEP-LINT-HOT-BANNED": {
       "severity": 0,
       "check": "banned_token_policy",
-      "applies_to_classes": ["CEP-0", "HPC-0", "RCS-0"],
+      "applies_to_classes": [
+        "CEP-0",
+        "HPC-0",
+        "RCS-0"
+      ],
       "class_field": "CEP:CLASS",
-      "tokens": ["Box::new", "Vec::", "String::", "format!", "println!", "eprintln!", "panic!", "todo!", "unimplemented!", ".unwrap()", ".expect(", "Rc::", "Arc::", "Mutex", "RwLock", "dyn ", "async ", "std::", "thread::spawn"]
+      "tokens": [
+        "Box::new",
+        "Vec::",
+        "String::",
+        "format!",
+        "println!",
+        "eprintln!",
+        "panic!",
+        "todo!",
+        "unimplemented!",
+        ".unwrap()",
+        ".expect(",
+        "Rc::",
+        "Arc::",
+        "Mutex",
+        "RwLock",
+        "dyn ",
+        "async ",
+        "std::",
+        "thread::spawn"
+      ]
     },
     "CEP-LINT-STUB-BODY": {
       "severity": 1,
       "check": "function_policy",
       "mode": "stub_body",
       "suppress_status_field": "CEP:STATUS",
-      "suppress_statuses": ["stub", "partial", "placeholder"]
+      "suppress_statuses": [
+        "stub",
+        "partial",
+        "placeholder"
+      ]
     },
     "CEP-LINT-EMPTY-CATCH": {
       "severity": 1,
@@ -109,7 +198,7 @@
     },
     "CEP-LINT-NAMING-TYPE": {
       "severity": 2,
-      "check": "flat_code_regex",
+      "check": "name_validation_regex",
       "pattern": "\\b(struct|enum|union)\\s+([A-Za-z_][A-Za-z0-9_]*)",
       "line_group": 2,
       "name_pattern": "^[A-Z][A-Za-z0-9]*$"
@@ -124,8 +213,8 @@
       "severity": 2,
       "check": "comment_regex",
       "scope": "line",
-      "pattern": "^\\s*//\\s*(let |fn |pub |if |for |while |return |use |match ).*;",
-      "suppression_pattern": "^\\s*//\\s*CEP:"
+      "pattern": "^(let |fn |pub |if |for |while |return |use |match ).*;",
+      "suppression_pattern": "^CEP:"
     },
     "CEP-LINT-DOC-SYNC": {
       "severity": 1,
@@ -151,7 +240,12 @@
         "RCS-2": 1200
       },
       "default_limit": 400,
-      "junk_names": ["util", "helper", "misc", "common"]
+      "junk_names": [
+        "util",
+        "helper",
+        "misc",
+        "common"
+      ]
     },
     "CEP-LINT-DOC-ID": {
       "severity": 1,
@@ -180,7 +274,11 @@
     "CEP-LINT-SECRET-SCAN": {
       "severity": 0,
       "check": "secret_probe_policy",
-      "patterns": ["(?i)(password|passwd|secret_key|api_key|apikey|aws_secret_access_key)\\s*=\\s*['\\\"][^'\\\"]+['\\\"]", "-----BEGIN (RSA |EC |OPENSSH |PGP )?PRIVATE KEY-----", "\\bAKIA[0-9A-Z]{16}\\b"],
+      "patterns": [
+        "(?i)(password|passwd|secret_key|api_key|apikey|aws_secret_access_key)\\s*=\\s*['\\\"][^'\\\"]+['\\\"]",
+        "-----BEGIN (RSA |EC |OPENSSH |PGP )?PRIVATE KEY-----",
+        "\\bAKIA[0-9A-Z]{16}\\b"
+      ],
       "exempt_paths": [],
       "suppression_pattern": "CEP:SECRET"
     },
@@ -189,6 +287,21 @@
       "check": "unsafe_doc_policy",
       "unsafe_field": "CEP:UNSAFE",
       "exempt_paths": []
+    },
+    "CEP-LINT-HUNT-RECEIPT": {
+      "severity": 2,
+      "check": "commit_hunt_manifest",
+      "note": "Documented in standards 65.5; the signed-receipt CI infrastructure is deferred per ticket CEP-90 and emits one recorded-deviation finding per scan."
+    },
+    "CEP-LINT-BENCH-EVIDENCE": {
+      "severity": 2,
+      "check": "benchmark_manifest",
+      "note": "Documented in standards 69.7; the PMC-backed receipt infrastructure is deferred per ticket CEP-91 (CIV-4) and emits one recorded-deviation finding per scan."
+    },
+    "CEP-LINT-HUNTER-RECEIPT": {
+      "severity": 2,
+      "check": "hunter_receipt",
+      "note": "Documented in standards 67.3; deferred per ticket CEP-90."
     }
   }
 }

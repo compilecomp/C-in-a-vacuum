@@ -1,0 +1,276 @@
+{
+  "manifest_version": 1,
+  "note": "One violating and one compliant scenario per configured rule; live-gate rules carry a zero-count smoke scenario.",
+  "scenarios": [
+    {
+      "rule": "CEP-LINT-FILE-HEADER",
+      "fixture": "tools/cep_lint/tests/fixtures/file-header/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-FILE-HEADER",
+      "fixture": "tools/cep_lint/tests/fixtures/file-header/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-FUNC-BLOCK",
+      "fixture": "tools/cep_lint/tests/fixtures/func-block/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-FUNC-BLOCK",
+      "fixture": "tools/cep_lint/tests/fixtures/func-block/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-STATUS-VALUE",
+      "fixture": "tools/cep_lint/tests/fixtures/status-value/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-STATUS-VALUE",
+      "fixture": "tools/cep_lint/tests/fixtures/status-value/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-TODO-OWNER",
+      "fixture": "tools/cep_lint/tests/fixtures/todo-owner/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-TODO-OWNER",
+      "fixture": "tools/cep_lint/tests/fixtures/todo-owner/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-STUB-DECL",
+      "fixture": "tools/cep_lint/tests/fixtures/stub-decl/violation.rs",
+      "expected_findings": 2,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-STUB-DECL",
+      "fixture": "tools/cep_lint/tests/fixtures/stub-decl/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-PLACEHOLDER-COMMENT",
+      "fixture": "tools/cep_lint/tests/fixtures/placeholder-comment/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-PLACEHOLDER-COMMENT",
+      "fixture": "tools/cep_lint/tests/fixtures/placeholder-comment/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-PLACEHOLDER-TEXT",
+      "fixture": "tools/cep_lint/tests/fixtures/placeholder-text/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-PLACEHOLDER-TEXT",
+      "fixture": "tools/cep_lint/tests/fixtures/placeholder-text/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-MAGIC-NUMBER",
+      "fixture": "tools/cep_lint/tests/fixtures/magic-number/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-MAGIC-NUMBER",
+      "fixture": "tools/cep_lint/tests/fixtures/magic-number/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-MACRO-PREFIX",
+      "fixture": "tools/cep_lint/tests/fixtures/macro-prefix/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-MACRO-PREFIX",
+      "fixture": "tools/cep_lint/tests/fixtures/macro-prefix/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-HOT-BANNED",
+      "fixture": "tools/cep_lint/tests/fixtures/hot-banned/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-HOT-BANNED",
+      "fixture": "tools/cep_lint/tests/fixtures/hot-banned/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-STUB-BODY",
+      "fixture": "tools/cep_lint/tests/fixtures/stub-body/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-STUB-BODY",
+      "fixture": "tools/cep_lint/tests/fixtures/stub-body/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-EMPTY-CATCH",
+      "fixture": "tools/cep_lint/tests/fixtures/empty-catch/violation.rs",
+      "expected_findings": 0,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-EMPTY-CATCH",
+      "fixture": "tools/cep_lint/tests/fixtures/empty-catch/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-EMPTY-BRANCH",
+      "fixture": "tools/cep_lint/tests/fixtures/empty-branch/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-EMPTY-BRANCH",
+      "fixture": "tools/cep_lint/tests/fixtures/empty-branch/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-CONSTANT-RETURN",
+      "fixture": "tools/cep_lint/tests/fixtures/constant-return/violation.rs",
+      "expected_findings": 0,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-CONSTANT-RETURN",
+      "fixture": "tools/cep_lint/tests/fixtures/constant-return/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-NAMING-TYPE",
+      "fixture": "tools/cep_lint/tests/fixtures/naming-type/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-NAMING-TYPE",
+      "fixture": "tools/cep_lint/tests/fixtures/naming-type/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-NAMING-FUNC",
+      "fixture": "tools/cep_lint/tests/fixtures/naming-func/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-NAMING-FUNC",
+      "fixture": "tools/cep_lint/tests/fixtures/naming-func/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-COMMENTED-CODE",
+      "fixture": "tools/cep_lint/tests/fixtures/commented-code/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-COMMENTED-CODE",
+      "fixture": "tools/cep_lint/tests/fixtures/commented-code/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-DOC-SYNC",
+      "fixture": "tools/cep_lint/tests/fixtures/doc-sync/compliant.rs",
+      "expected_findings": 0,
+      "mode": "live-gate-smoke"
+    },
+    {
+      "rule": "CEP-LINT-ATOMIC-FILE",
+      "fixture": "tools/cep_lint/tests/fixtures/atomic-file/compliant.rs",
+      "expected_findings": 0,
+      "mode": "live-gate-smoke"
+    },
+    {
+      "rule": "CEP-LINT-DOC-ID",
+      "fixture": "tools/cep_lint/tests/fixtures/doc-id/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-DOC-ID",
+      "fixture": "tools/cep_lint/tests/fixtures/doc-id/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-DOC-FILE",
+      "fixture": "tools/cep_lint/tests/fixtures/doc-file/compliant.rs",
+      "expected_findings": 0,
+      "mode": "live-gate-smoke"
+    },
+    {
+      "rule": "CEP-LINT-DOC-TIERS",
+      "fixture": "tools/cep_lint/tests/fixtures/doc-tiers/compliant.rs",
+      "expected_findings": 0,
+      "mode": "live-gate-smoke"
+    },
+    {
+      "rule": "CEP-LINT-DOC-INQUISITION",
+      "fixture": "tools/cep_lint/tests/fixtures/doc-inquisition/compliant.rs",
+      "expected_findings": 0,
+      "mode": "live-gate-smoke"
+    },
+    {
+      "rule": "CEP-LINT-SECRET-SCAN",
+      "fixture": "tools/cep_lint/tests/fixtures/secret-scan/violation.rs",
+      "expected_findings": 1,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-SECRET-SCAN",
+      "fixture": "tools/cep_lint/tests/fixtures/secret-scan/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    },
+    {
+      "rule": "CEP-LINT-UNSAFE-DOC",
+      "fixture": "tools/cep_lint/tests/fixtures/unsafe-doc/violation.rs",
+      "expected_findings": 0,
+      "mode": "violating"
+    },
+    {
+      "rule": "CEP-LINT-UNSAFE-DOC",
+      "fixture": "tools/cep_lint/tests/fixtures/unsafe-doc/compliant.rs",
+      "expected_findings": 0,
+      "mode": "compliant"
+    }
+  ]
+}

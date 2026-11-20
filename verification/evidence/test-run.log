@@ -1,4 +1,33 @@
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running unittests src/lib.rs (target/debug/build/cep_lint/248b99d66dc6db99/out/cep_lint_config-248b99d66dc6db99)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/build/cep_lint/22705c7220c3d71c/out/cep_lint-22705c7220c3d71c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/integration.rs (target/debug/build/cep_lint/b1de931a966752e6/out/integration-b1de931a966752e6)
+
+running 3 tests
+test doc_sync_live_gate_passes ... ok
+test exit_code_contract ... ok
+test self_test_gate_passes ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/unit.rs (target/debug/build/cep_lint/4f60d712fc0a0a43/out/unit-4f60d712fc0a0a43)
+
+running 2 tests
+test regex_subset_patterns_from_config_compile ... ok
+test json_parse_rejects_trailing ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
      Running unittests src/lib.rs (target/debug/build/civ-capability/08a2cea3508debbf/out/civ_capability-08a2cea3508debbf)
 
 running 0 tests
@@ -8,10 +37,10 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
      Running tests/capability_tests.rs (target/debug/build/civ-capability/2d2e2d6c29328f2d/out/capability_tests-2d2e2d6c29328f2d)
 
 running 26 tests
-test test_alloc_distinct_slots ... ok
 test test_alloc_returns_usable_handle ... ok
-test test_allocated_count_consistency ... ok
+test test_alloc_distinct_slots ... ok
 test test_capability_error_display ... ok
+test test_allocated_count_consistency ... ok
 test test_derive_attenuates ... ok
 test test_derive_empty_rights_legal ... ok
 test test_derive_invalid_parent_fails_closed ... ok
@@ -46,15 +75,15 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
      Running tests/allocator_tests.rs (target/debug/build/civ-pmm/d3595dc4dcfaa3b4/out/allocator_tests-d3595dc4dcfaa3b4)
 
 running 33 tests
+test test_alloc_contiguous_first_fit_layout ... ok
 test test_alloc_contiguous_after_fragmentation ... ok
 test test_alloc_contiguous_full_capacity ... ok
-test test_alloc_contiguous_first_fit_layout ... ok
 test test_alloc_contiguous_oversized_rejected ... ok
 test test_alloc_contiguous_rejects_after_exhaustion ... ok
 test test_alloc_contiguous_zero_len_rejected ... ok
 test test_alloc_exhaustion_exact ... ok
-test test_alloc_free_roundtrip ... ok
 test test_alloc_hint_wrap ... ok
+test test_alloc_free_roundtrip ... ok
 test test_alloc_returns_disjoint_frames ... ok
 test test_bitmap_direct_out_of_bounds_rejected ... ok
 test test_bitmap_find_zero_patterns ... ok
@@ -81,6 +110,12 @@ test test_reserve_range_then_alloc_skips ... ok
 test test_stats_consistency ... ok
 
 test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests cep_lint_config
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
    Doc-tests civ_capability
 
