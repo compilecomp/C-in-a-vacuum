@@ -8,7 +8,7 @@ Creates a child capability from a parent. The child gets exactly the rights you 
 
 ## Tier 2: Silicon Reality
 
-The authority core: resolution (bounds + occupancy + generation), two right comparisons (GRANT, subset), then one slot write. Both security checks run before any mutation, so every refusal is atomic. The Kani harness proves the refusal/acceptance biconditional over the full u64 rights space; the unit suite sweeps all 2x2 x 2x5 named-right combinations exhaustively.
+The authority core: resolution (bounds + occupancy + generation), two right comparisons (GRANT, subset), then one slot write. Both security checks run before any mutation, so every refusal is atomic. The Kani harness proves the refusal/acceptance biconditional over the full u64 rights space; the unit suite sweeps the full named-rights space exhaustively (2^6 parent states including grant x 2^5 requests = 2048 classifications).
 
 ## Silent Failure Checklist
 

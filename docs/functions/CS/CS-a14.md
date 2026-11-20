@@ -15,4 +15,4 @@ Maximum-entropy forgery sweep: every single-bit mutation of a live handle is pre
 1. Fallbacks: n/a; test artifact.
 2. Truncation: n/a.
 3. Wrapping: n/a.
-4. Error codes: typed rejection asserted for all 63 mutated handles.
+4. Error codes: typed rejection asserted for all 64 mutated handles (every single-bit flip differs from the live handle).

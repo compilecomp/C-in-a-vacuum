@@ -18,6 +18,14 @@ use core::fmt;
 /// No variant indicates a panic path; all are returned values. The set is
 /// closed: new failure modes require a new variant plus a registry update
 /// (design.md 0.3 completeness rule).
+// CEP:WHAT: The closed error taxonomy of the capability subsystem.
+// CEP:WHY: One total error enum makes every authority-check failure nameable at call sites and in proofs, satisfying the bounded-failure law.
+// CEP:STATUS: complete
+// CEP:FAILURE: none; the type represents failures and has no failure path of its own.
+// CEP:ASSUMES: none; the variant set is total over the declared failure modes.
+// CEP:COST: O(1) construction; Display is O(longest message 45 bytes); no allocation.
+// CEP:EVIDENCE: unit test test_capability_error_display in tests/capability_tests.rs.
+// CEP:SECURITY: Variants leak no slot contents, generations, or object identifiers beyond the failing handle (design.md CIV-REQ-009).
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum CapabilityError {
     /// Argument structurally invalid: zero-length backing store.

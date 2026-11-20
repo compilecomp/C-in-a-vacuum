@@ -52,15 +52,16 @@ and residual risk. Entries are versioned; a change to any field is a registry up
 | Target | Capability integrity (design.md 21: Capability integrity) |
 | Attack surface | `lookup`, `derive`, `revoke` |
 | Required protection | Handles encode slot index plus generation; stale generation fails closed; derived rights are a subset of parent rights |
-| Assumptions | The generation counter is not forgeable within the proof model (monotone per slot) |
-| Verification technique | Kani: attenuation monotonicity, revocation-closes-access, generation monotonicity |
-| Residual risk | Handle guessing across process boundaries is excluded until the process manager exists (design.md 3.2); tracked as CIV-3 |
+| Assumptions | The generation counter advances only through the table's checked operations within one table instance; it is u32 and wrapping |
+| Verification technique | Kani: attenuation monotonicity, revocation-closes-access, fail-closed lookup over the full handle space (results UNVERIFIED until recorded runs) |
+| Residual risk | (1) Handle guessing across process boundaries is excluded until the process manager exists (design.md 3.2); tracked as CIV-3. (2) Generation wrap: after 2^32 revocations of one slot, the wrapping counter can alias a pre-wrap handle with generation 0 against a reallocated slot; outside the modeled lifetime, recorded here and in the crate invariants. (3) Cascading revocation is unimplemented (ticket CIV-5): revoking a parent does not invalidate capabilities derived from it. (4) Lookup is not constant time with respect to the handle (documented API contract; cache-footprint residual deferred under CIV-3). |
 
 ## Residual-risk registry
 
 | ID | Description | Ticket |
 |---|---|---|
 | CIV-1 | Verification tree population in progress: Kani proofs are UNVERIFIED until a recorded cargo kani run exists; tracked as the verification-tree ticket cited by threat-model and README headers | CIV-1 |
+| CIV-5 | Cascading revocation (parent revocation invalidating derived capabilities) is the declared next increment of the capability subsystem | CIV-5 |
 | CIV-2 | Capability handle entropy against cross-process guessing requires the process manager | CIV-3 |
 | CIV-3 | Per-commit Hunt Receipt infrastructure (standards 65) requires a CI runner with a signing key | CEP-90 |
 | CIV-4 | PMC-backed benchmark receipts (standards 69) require isolated, frequency-locked hardware | CEP-91 |

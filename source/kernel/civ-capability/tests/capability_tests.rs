@@ -10,8 +10,8 @@
 // CEP:SECURITY: Scenarios model threat-model TM-3 adversaries: forged handles, stale generations, escalation requests, grant-less parents.
 // CEP:TEST-CLASS: Unit + property (adversarial-dominant)
 // CEP:TEST-TARGET: civ-capability rights bitset, capability table, handle encoding
-// CEP:TEST-QUOTA: 28 scenarios per change; Kani bounded proofs per proofs.rs (5 harnesses); targeted fuzz harness deferred to the cep_hunt infrastructure (ticket CEP-90), with Kani bounded proofs as the declared substitute within their bounds
-// CEP:TEST-DISTRIBUTION: 17 worst-case/adversarial (61%), 10 middle (36%), 1 happy (3%)
+// CEP:TEST-QUOTA: 26 scenarios per change; Kani bounded proofs per proofs.rs (5 harnesses); targeted fuzz harness deferred to the cep_hunt infrastructure (ticket CEP-90), with Kani bounded proofs as the declared substitute within their bounds
+// CEP:TEST-DISTRIBUTION: 14 worst-case/adversarial (54%), 11 middle (42%), 1 happy (4%)
 // CEP:TEST-SCALING: Every new failure mode adds its regression matrix (standards 61.3, 50 tests per confirmed bug)
 // CEP:TEST-EVIDENCE: cargo test -p civ-capability output recorded in verification/evidence/test-run.log
 
@@ -104,7 +104,7 @@ fn test_handle_roundtrip_encoding() {
 
 #[test]
 // CEP:WHAT: Allocates one capability and resolves it to the exact rights and object stored.
-// CEP:WHY: Happy-path allocation correctness for the accounting state machine.
+// CEP:WHY: Content-checking allocation scenario for the accounting state machine (middle class; the suite's single happy smoke is test_full_lifecycle).
 // CEP:STATUS: complete
 // CEP:FAILURE: A failing assertion aborts the cargo test run; no state escapes the harness.
 // CEP:ASSUMES: Host test target; test-only std allocation for scaffolding, none in the code under test.
@@ -299,7 +299,7 @@ fn test_derive_empty_rights_legal() {
 
 #[test]
 // CEP:ID: CS-a13
-// CEP:WHAT: Exhaustive sweep over every (parent rights, request rights) pair of the five named rights with and without the grant flag, asserting classification and child contents for all 4096 combinations.
+// CEP:WHAT: Exhaustive sweep over every (parent rights, request rights) pair of the five named rights with and without the grant flag, asserting classification and child contents for all 2048 combinations (64 parents x 32 requests).
 // CEP:WHY: The named-rights space is checked exhaustively rather than sampled, so a masking regression in any single right bit cannot hide; unit counterpart of the Kani escalation proof.
 // CEP:STATUS: complete
 // CEP:FAILURE: A failing assertion aborts the cargo test run; no state escapes the harness.

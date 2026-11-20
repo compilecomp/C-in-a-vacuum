@@ -63,6 +63,14 @@ pub const RIGHT_GRANT: u64 = 1 << 4;
 /// every u64 value is a legal rights set, so construction cannot fail and
 /// all filtering happens at the derivation boundary where escalation is
 /// rejected.
+// CEP:WHAT: The authority rights bitset over u64.
+// CEP:WHY: A total bitset type makes every authority check a single comparable subset operation, keeping attenuation provable instead of scattered flag logic.
+// CEP:STATUS: complete
+// CEP:FAILURE: none; total type, construction cannot fail.
+// CEP:ASSUMES: Right bits are distinct powers of two by construction (named constants are distinct shifts of 1); the u64 width bounds the model to 64 rights.
+// CEP:COST: O(1) per operation; one or two machine words; no allocation.
+// CEP:EVIDENCE: unit tests rights_* in tests/capability_tests.rs; Kani proof proof_derive_never_escalates.
+// CEP:SECURITY: Attenuation legality reduces to contains_all at the derivation boundary (TM-3).
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Rights(u64);
 
@@ -132,7 +140,7 @@ impl Rights {
     // CEP:FAILURE: none; total predicate.
     // CEP:ASSUMES: none.
     // CEP:COST: O(1); one AND and one compare.
-    // CEP:EVIDENCE: Kani proof proof_derive_never_escalates over the full u64 space.
+    // CEP:EVIDENCE: Kani proof proof_derive_never_escalates over the full u64 space (results UNVERIFIED until a recorded cargo kani run; status in verification/evidence/toolchain.json).
     // CEP:OPTIMAL: lower-bound optimal
     // CEP:OPTPROOF: subset testing requires exactly one AND and one compare; the implementation performs exactly that. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
     #[inline]

@@ -1,6 +1,6 @@
 {
   "registry_version": 2,
-  "note": "Entries follow design.md 14.3 and CIV verification chain.md section 5. Result status is recorded only for tool runs actually executed; pending entries are labeled UNVERIFIED per verification/README.md.",
+  "note": "Entries follow design.md 14.3 and CIV verification chain.md section 5. Result status is recorded only for tool runs actually executed; pending entries are labeled UNVERIFIED per verification/README.md. dependencies lists proof-ID dependencies; artifact_hash is the source-revision association, re-validated per commit.",
   "proofs": [
     {
       "proof_id": "MEM-a09",
@@ -15,7 +15,9 @@
       "scope": "bounded model per assumptions",
       "implementation_revision": "commit introducing source/kernel/civ-pmm/src/proofs.rs (see git history)",
       "reviewer": "10-agent vote round 1 (voters 1-10); round-2 delta review",
-      "reproduction": "cargo kani -p civ-pmm --harness proof_new_rejects_bad_config_no_panic"
+      "reproduction": "cargo kani -p civ-pmm --harness proof_new_rejects_bad_config_no_panic",
+      "dependencies": [],
+      "artifact_hash": "UNVERIFIED (source sha256 recorded in verification/evidence/toolchain.json at evidence capture; re-associated per commit by CI)"
     },
     {
       "proof_id": "MEM-a10",
@@ -30,7 +32,9 @@
       "scope": "bounded model per assumptions",
       "implementation_revision": "commit introducing source/kernel/civ-pmm/src/proofs.rs",
       "reviewer": "10-agent vote round 1 (voters 1-10); round-2 delta review",
-      "reproduction": "cargo kani -p civ-pmm --harness proof_alloc_exhaustion_and_uniqueness"
+      "reproduction": "cargo kani -p civ-pmm --harness proof_alloc_exhaustion_and_uniqueness",
+      "dependencies": [],
+      "artifact_hash": "UNVERIFIED (source sha256 recorded in verification/evidence/toolchain.json at evidence capture; re-associated per commit by CI)"
     },
     {
       "proof_id": "MEM-a11",
@@ -45,7 +49,9 @@
       "scope": "bounded model per assumptions",
       "implementation_revision": "commit introducing source/kernel/civ-pmm/src/proofs.rs",
       "reviewer": "10-agent vote round 1 (voters 1-10); round-2 delta review",
-      "reproduction": "cargo kani -p civ-pmm --harness proof_free_validates_untrusted_input"
+      "reproduction": "cargo kani -p civ-pmm --harness proof_free_validates_untrusted_input",
+      "dependencies": [],
+      "artifact_hash": "UNVERIFIED (source sha256 recorded in verification/evidence/toolchain.json at evidence capture; re-associated per commit by CI)"
     },
     {
       "proof_id": "MEM-a12",
@@ -60,7 +66,9 @@
       "scope": "bounded model per assumptions",
       "implementation_revision": "commit introducing source/kernel/civ-pmm/src/proofs.rs",
       "reviewer": "10-agent vote round 1 (voters 1-10); round-2 delta review",
-      "reproduction": "cargo kani -p civ-pmm --harness proof_contiguous_bounds_and_disjoint"
+      "reproduction": "cargo kani -p civ-pmm --harness proof_contiguous_bounds_and_disjoint",
+      "dependencies": [],
+      "artifact_hash": "UNVERIFIED (source sha256 recorded in verification/evidence/toolchain.json at evidence capture; re-associated per commit by CI)"
     },
     {
       "proof_id": "MEM-a13",
@@ -75,7 +83,9 @@
       "scope": "bounded model per assumptions",
       "implementation_revision": "commit introducing source/kernel/civ-pmm/src/proofs.rs",
       "reviewer": "10-agent vote round 1 (voters 1-10); round-2 delta review",
-      "reproduction": "cargo kani -p civ-pmm --harness proof_reserve_conflict_is_atomic"
+      "reproduction": "cargo kani -p civ-pmm --harness proof_reserve_conflict_is_atomic",
+      "dependencies": [],
+      "artifact_hash": "UNVERIFIED (source sha256 recorded in verification/evidence/toolchain.json at evidence capture; re-associated per commit by CI)"
     },
     {
       "proof_id": "MEM-a14",
@@ -90,7 +100,9 @@
       "scope": "bounded model per assumptions",
       "implementation_revision": "commit introducing source/kernel/civ-pmm/src/proofs.rs",
       "reviewer": "10-agent vote round 1 (voters 1-10); round-2 delta review",
-      "reproduction": "cargo kani -p civ-pmm --harness proof_invariant_popcount_matches_allocated"
+      "reproduction": "cargo kani -p civ-pmm --harness proof_invariant_popcount_matches_allocated",
+      "dependencies": [],
+      "artifact_hash": "UNVERIFIED (source sha256 recorded in verification/evidence/toolchain.json at evidence capture; re-associated per commit by CI)"
     },
     {
       "proof_id": "MEM-a15h",
@@ -105,7 +117,9 @@
       "scope": "bounded model per assumptions",
       "implementation_revision": "commit introducing source/kernel/civ-pmm/src/proofs.rs",
       "reviewer": "10-agent vote round 1 (voters 1-10); round-2 delta review",
-      "reproduction": "cargo kani -p civ-pmm --harness proof_bitmap_run_search_consistent"
+      "reproduction": "cargo kani -p civ-pmm --harness proof_bitmap_run_search_consistent",
+      "dependencies": [],
+      "artifact_hash": "UNVERIFIED (source sha256 recorded in verification/evidence/toolchain.json at evidence capture; re-associated per commit by CI)"
     },
     {
       "proof_id": "MEM-a16h",
@@ -120,7 +134,9 @@
       "scope": "bounded model per assumptions",
       "implementation_revision": "commit introducing source/kernel/civ-pmm/src/proofs.rs",
       "reviewer": "10-agent vote round 1 (voters 1-10); round-2 delta review",
-      "reproduction": "cargo kani -p civ-pmm --harness proof_bitmap_set_run_bounds"
+      "reproduction": "cargo kani -p civ-pmm --harness proof_bitmap_set_run_bounds",
+      "dependencies": [],
+      "artifact_hash": "UNVERIFIED (source sha256 recorded in verification/evidence/toolchain.json at evidence capture; re-associated per commit by CI)"
     },
     {
       "proof_id": "CS-a08",
@@ -135,7 +151,9 @@
       "scope": "bounded model per assumptions",
       "implementation_revision": "commit introducing source/kernel/civ-capability/src/proofs.rs",
       "reviewer": "10-agent vote round 1 (pending for this module); delta review",
-      "reproduction": "cargo kani -p civ-capability --harness proof_derive_never_escalates"
+      "reproduction": "cargo kani -p civ-capability --harness proof_derive_never_escalates",
+      "dependencies": [],
+      "artifact_hash": "UNVERIFIED (source sha256 recorded in verification/evidence/toolchain.json at evidence capture; re-associated per commit by CI)"
     },
     {
       "proof_id": "CS-a09",
@@ -150,7 +168,9 @@
       "scope": "bounded model per assumptions",
       "implementation_revision": "commit introducing source/kernel/civ-capability/src/proofs.rs",
       "reviewer": "10-agent vote round 1 (pending for this module); delta review",
-      "reproduction": "cargo kani -p civ-capability --harness proof_lookup_fail_closed"
+      "reproduction": "cargo kani -p civ-capability --harness proof_lookup_fail_closed",
+      "dependencies": [],
+      "artifact_hash": "UNVERIFIED (source sha256 recorded in verification/evidence/toolchain.json at evidence capture; re-associated per commit by CI)"
     },
     {
       "proof_id": "CS-a10",
@@ -165,7 +185,9 @@
       "scope": "bounded model per assumptions; 2^32 generation wrap is the declared residual (TM-3)",
       "implementation_revision": "commit introducing source/kernel/civ-capability/src/proofs.rs",
       "reviewer": "10-agent vote round 1 (pending for this module); delta review",
-      "reproduction": "cargo kani -p civ-capability --harness proof_revoke_closes_access"
+      "reproduction": "cargo kani -p civ-capability --harness proof_revoke_closes_access",
+      "dependencies": [],
+      "artifact_hash": "UNVERIFIED (source sha256 recorded in verification/evidence/toolchain.json at evidence capture; re-associated per commit by CI)"
     },
     {
       "proof_id": "CS-a11",
@@ -180,7 +202,9 @@
       "scope": "bounded model per assumptions",
       "implementation_revision": "commit introducing source/kernel/civ-capability/src/proofs.rs",
       "reviewer": "10-agent vote round 1 (pending for this module); delta review",
-      "reproduction": "cargo kani -p civ-capability --harness proof_handle_space_no_panic"
+      "reproduction": "cargo kani -p civ-capability --harness proof_handle_space_no_panic",
+      "dependencies": [],
+      "artifact_hash": "UNVERIFIED (source sha256 recorded in verification/evidence/toolchain.json at evidence capture; re-associated per commit by CI)"
     },
     {
       "proof_id": "CS-a12",
@@ -195,7 +219,9 @@
       "scope": "bounded model per assumptions",
       "implementation_revision": "commit introducing source/kernel/civ-capability/src/proofs.rs",
       "reviewer": "10-agent vote round 1 (pending for this module); delta review",
-      "reproduction": "cargo kani -p civ-capability --harness proof_invariant_slots_consistent"
+      "reproduction": "cargo kani -p civ-capability --harness proof_invariant_slots_consistent",
+      "dependencies": [],
+      "artifact_hash": "UNVERIFIED (source sha256 recorded in verification/evidence/toolchain.json at evidence capture; re-associated per commit by CI)"
     }
   ]
 }

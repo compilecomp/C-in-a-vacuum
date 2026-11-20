@@ -59,8 +59,10 @@ fn proof_derive_never_escalates() {
     let requested = Rights::from_raw(requested_raw);
 
     let result = table.derive(parent, requested);
-    let grant_ok = grant_flag;
-    let subset_ok = parent_rights.contains_all(requested);
+    // Oracle computed from the parent's ACTUAL rights, not the symbolic
+    // flag: parent_rights_raw may already contain the grant bit.
+    let grant_ok = parent_rights.contains_all(Rights::from_raw(RIGHT_GRANT));
+    let subset_ok = parent_rights_raw & requested_raw == requested_raw;
     match result {
         Ok(child) => {
             assert!(
@@ -70,8 +72,11 @@ fn proof_derive_never_escalates() {
             let (child_rights, child_object) = table.lookup(child).unwrap();
             assert_eq!(child_rights.as_raw(), requested_raw);
             assert_eq!(child_object, parent_object);
-            assert!(
-                parent_rights.contains_all(child_rights),
+            // Independent raw-arithmetic attenuation witness (no reuse of
+            // the implementation's contains_all, avoiding oracle circularity).
+            assert_eq!(
+                child_rights.as_raw() & !parent_rights.as_raw(),
+                0,
                 "child holds rights the parent does not hold"
             );
         }
@@ -125,8 +130,6 @@ fn proof_lookup_fail_closed() {
     let target: Handle = Handle::pack(kani::any(), kani::any());
     let result = table.lookup(target);
 
-    let slot = target.slot_index() as usize;
-    let live_gen_a = handle_a.generation();
     if target == handle_a {
         let (rights, object) = result.unwrap();
         assert_eq!(rights.as_raw(), rights_a_raw);
@@ -146,8 +149,6 @@ fn proof_lookup_fail_closed() {
             classified,
             "every non-live handle must fail closed with a typed error"
         );
-        let _ = slot;
-        let _ = live_gen_a;
     }
 }
 

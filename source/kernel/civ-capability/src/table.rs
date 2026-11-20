@@ -7,7 +7,7 @@
 // CEP:TICKET: CIV-5
 // CEP:FAILURE: Every operation returns a typed error (CapabilityError) instead of panicking; failed operations leave state unchanged; no allocation; no I/O.
 // CEP:ASSUMES: Generation counters are u32 and advance only on revoke; a slot revocated 2^32 times wraps its generation (residual risk recorded in security/threat_model.md TM-3 and crate docs); the table is single-owner, not Sync/Send beyond the backing store's autotraits.
-// CEP:COST: alloc/derive/revoke O(capacity) first-fit slot scan; lookup O(1); all allocation-free. First-fit free-slot search cost is bounded by one pass; a free-list structure is the tracked optimization (ticket CEP-13) pending the process-manager workload data.
+// CEP:COST: alloc/derive O(capacity) first-fit slot scan; revoke and lookup O(1); all allocation-free. First-fit free-slot search cost is bounded by one pass; a free-list structure is the tracked optimization (ticket CEP-13) pending the process-manager workload data.
 // CEP:EVIDENCE: unit tests in source/kernel/civ-capability/tests/capability_tests.rs; Kani proofs proof_derive_never_escalates, proof_lookup_fail_closed, proof_revoke_closes_access, proof_handle_space_no_panic, proof_invariant_slots_consistent.
 // CEP:SECURITY: This is the kernel authority boundary (design.md 9.1, threat model TM-3); handles are untrusted u64 values, derivation refuses escalation over the full input space, and revocation closes access permanently for the named handle.
 
@@ -22,6 +22,14 @@ use crate::rights::{Rights, RIGHT_GRANT};
 /// uninitialized value is [`SlotEntry::EMPTY`], and the table overwrites
 /// every slot with it at construction so caller memory never surfaces as a
 /// phantom capability (crate invariant 4 analog of the frame allocator).
+// CEP:WHAT: One capability slot holding rights, target object, generation, and occupancy.
+// CEP:WHY: A plain-data slot keeps the table's storage inspectable and Copy-safe while fields stay private so occupancy and generation can only change through the checked table operations.
+// CEP:STATUS: complete
+// CEP:FAILURE: none; plain data type with no failure paths of its own.
+// CEP:ASSUMES: Generation semantics (advance on revoke, reset at construction) are enforced exclusively by CapabilityTable; enforced by private fields.
+// CEP:COST: O(1) per field access; Copy type with no drop glue.
+// CEP:EVIDENCE: cargo test -p civ-capability test_table_initializes_backing.
+// CEP:SECURITY: Slot contents are the stored authority; private fields prevent forgery of occupancy or generation outside the table.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct SlotEntry {
     rights: Rights,
@@ -38,7 +46,7 @@ impl SlotEntry {
     // CEP:FAILURE: none; total function.
     // CEP:ASSUMES: none.
     // CEP:COST: O(1); constant fold.
-    // CEP:EVIDENCE: cargo test -p civ-capability test_table_rejects_empty_backing.
+    // CEP:EVIDENCE: cargo test -p civ-capability test_table_initializes_backing (exercises the initialization semantics end to end).
     #[inline]
     pub const fn empty() -> Self {
         Self {
@@ -48,32 +56,6 @@ impl SlotEntry {
             allocated: false,
         }
     }
-
-    /// Rights held by the slot's capability; meaningless while unallocated.
-    // CEP:WHAT: Returns the rights stored in the slot.
-    // CEP:WHY: Diagnostics and the invariant harness read slot rights; the accessor is read-only and cannot grant authority.
-    // CEP:STATUS: complete
-    // CEP:FAILURE: none; total accessor.
-    // CEP:ASSUMES: none.
-    // CEP:COST: O(1).
-    // CEP:EVIDENCE: Kani proof proof_invariant_slots_consistent.
-    #[inline]
-    pub const fn rights(&self) -> Rights {
-        self.rights
-    }
-
-    /// Whether the slot currently holds a live capability.
-    // CEP:WHAT: Reports slot occupancy.
-    // CEP:WHY: The invariant witness distinguishes allocated slots from holes without inspecting rights.
-    // CEP:STATUS: complete
-    // CEP:FAILURE: none; total accessor.
-    // CEP:ASSUMES: none.
-    // CEP:COST: O(1).
-    // CEP:EVIDENCE: Kani proof proof_invariant_slots_consistent.
-    #[inline]
-    pub const fn is_allocated(&self) -> bool {
-        self.allocated
-    }
 }
 
 /// An opaque capability handle: slot index in the low 32 bits, generation in the high 32 bits.
@@ -82,6 +64,14 @@ impl SlotEntry {
 /// [`CapabilityTable::lookup`], which fails closed unless the slot index is
 /// in range, the slot is allocated, and the generation matches (threat
 /// model TM-3).
+// CEP:WHAT: The opaque authority token packing a slot index and generation into one u64.
+// CEP:WHY: A register-sized opaque token makes capability transfer cheap while keeping the encoding forgeable-only-by-guessing; resolution validates every component.
+// CEP:STATUS: complete
+// CEP:FAILURE: none; plain data type with no failure paths of its own.
+// CEP:ASSUMES: The encoding is validated only at resolution time; the type itself accepts any packed value by design (TM-3 adversary model).
+// CEP:COST: O(1) pack/unpack; Copy type with no drop glue.
+// CEP:EVIDENCE: cargo test -p civ-capability test_handle_roundtrip_encoding; Kani proof proof_handle_space_no_panic.
+// CEP:SECURITY: The token carries authority; it leaks no table internals beyond what a successful lookup returns.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Handle(u64);
 
@@ -142,6 +132,16 @@ impl Handle {
 }
 
 /// A fixed-capability table over a caller-provided backing store.
+// CEP:WHAT: The capability table state machine over a caller-provided slot backing store.
+// CEP:WHY: Centralizing allocation, derivation, revocation, and resolution in one checked state machine makes the authority boundary single-gated and provable.
+// CEP:STATUS: partial
+// CEP:OWNER: civ-maintainer
+// CEP:TICKET: CIV-5
+// CEP:FAILURE: Every operation returns a typed error instead of panicking; failed operations leave state unchanged.
+// CEP:ASSUMES: Single-owner access; capacity within u32::MAX slots (validated at construction); generation semantics per revoke.
+// CEP:COST: alloc/derive O(capacity) first-fit scan; revoke and lookup O(1); all allocation-free.
+// CEP:EVIDENCE: unit tests in tests/capability_tests.rs; Kani harnesses in src/proofs.rs; registry entries CS-a08..a12.
+// CEP:SECURITY: The kernel authority boundary (design.md 9.1, TM-3); cascading revocation is the declared subset (crate docs).
 #[derive(Debug)]
 pub struct CapabilityTable<'a> {
     slots: &'a mut [SlotEntry],
@@ -153,7 +153,7 @@ impl<'a> CapabilityTable<'a> {
     // CEP:WHAT: Constructs a capability table over a caller-provided slot backing store, initializing every slot to EMPTY.
     // CEP:WHY: All structural validation happens once here so later operations rely on a proven-valid state; the full initialization pass discharges the no-phantom-capability obligation for caller-supplied memory.
     // CEP:STATUS: complete
-    // CEP:FAILURE: Returns CapabilityError::InvalidArgument for a zero-length backing store; no panic on any input; the backing store is written only after validation succeeds.
+    // CEP:FAILURE: Returns CapabilityError::InvalidArgument for a zero-length backing store or one longer than u32::MAX slots (the handle-encoding ceiling; without it the slot-index narrowing in alloc/derive would silently truncate, standards 66.2); no panic on any input; the backing store is written only after validation succeeds. Lifetime assumption: the table resets every generation to zero, so handles held across a dropped table instance over reused backing are invalid by contract, not by detection (declared residual, threat model TM-3).
     // CEP:ASSUMES: The caller owns the backing store exclusively for the table's lifetime; enforced by the mutable borrow.
     // CEP:COST: O(capacity) for the one-time initialization pass; O(1) validation.
     // CEP:OPTIMAL: lower-bound optimal
@@ -162,7 +162,7 @@ impl<'a> CapabilityTable<'a> {
     // CEP:SECURITY: Backing contents are untrusted (threat model TM-1/TM-2); uninitialized memory must never resolve as a capability.
     // CEP:ID: CS-a01
     pub fn new(backing: &'a mut [SlotEntry]) -> Result<Self, CapabilityError> {
-        if backing.is_empty() {
+        if backing.is_empty() || backing.len() > u32::MAX as usize {
             return Err(CapabilityError::InvalidArgument);
         }
         for slot in backing.iter_mut() {
@@ -182,7 +182,7 @@ impl<'a> CapabilityTable<'a> {
     // CEP:ASSUMES: none beyond construction invariants.
     // CEP:COST: O(capacity) first-fit scan worst case; O(1) per entry write.
     // CEP:OPTIMAL: not-optimal
-    // CEP:OPTPROOF: the first-fit scan matches the search lower bound for an unordered free-slot list, but a maintained free list makes allocation O(1); the scan was chosen because its correctness surface is smaller while no workload data exists. Optimization tracked as ticket CEP-13. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
+    // CEP:OPTNOTE: the first-fit scan matches the search lower bound for an unordered free-slot list, but a maintained free list makes allocation O(1); the scan was chosen because its correctness surface is smaller while no workload data exists. Optimization tracked as ticket CEP-13. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
     // CEP:EVIDENCE: cargo test -p civ-capability test_alloc_returns_usable_handle, test_table_exhaustion_exact; Kani proof proof_invariant_slots_consistent.
     // CEP:ID: CS-a02
     pub fn alloc(&mut self, object: u64, rights: Rights) -> Result<Handle, CapabilityError> {
@@ -207,8 +207,9 @@ impl<'a> CapabilityTable<'a> {
     // CEP:FAILURE: Returns ParentInvalid for an unresolvable parent handle, GrantDenied when the parent lacks RIGHT_GRANT, Escalation when the request exceeds the parent's rights, TableFull when no slot is free; state is bit-for-bit unchanged on every error path.
     // CEP:ASSUMES: none beyond construction invariants; parent handle is untrusted.
     // CEP:COST: O(capacity) parent resolution-free slot scan plus O(1) checks.
-    // CEP:OPTIMAL: lower-bound optimal
-    // CEP:OPTPROOF: correct derivation requires resolving the parent (bounds and generation checks), two right comparisons, and one slot write; the implementation performs exactly that work. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
+    // CEP:OPTIMAL: not-optimal
+    // CEP:OPTPROOF: resolution (bounds, occupancy, generation), two right comparisons, and one slot write match the work lower bound for the derivation checks; the O(capacity) free-slot scan is the disclosed gap, identical to alloc.
+    // CEP:OPTNOTE: a maintained free list makes the scan O(1); the scan was chosen for its smaller correctness surface while no workload data exists. Optimization tracked as ticket CEP-13. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
     // CEP:SECURITY: Escalation refusal is the mandatory capability-integrity property (design.md 21); the Kani harness proves refusal over the full u64 rights space, not sampled inputs.
     // CEP:EVIDENCE: cargo test -p civ-capability test_derive_attenuates, test_derive_refuses_escalation, test_derive_requires_grant_right; Kani proof proof_derive_never_escalates.
     // CEP:ID: CS-a03
@@ -249,10 +250,10 @@ impl<'a> CapabilityTable<'a> {
     // CEP:WHY: Revocation must close access permanently for the named handle (crate invariant 3, threat model TM-3); advancing the generation makes every outstanding copy of the handle stale, and freeing the slot allows reuse that still cannot match old handles.
     // CEP:STATUS: complete
     // CEP:FAILURE: Returns InvalidSlot for out-of-range indices, SlotEmpty for unallocated slots, StaleHandle for generation mismatches; state is unchanged on error. A slot whose generation counter reaches u32::MAX is freed and its counter wraps per the documented residual risk (threat model TM-3).
-    // CEP:ASSUMES: Generation wrap after 2^32 revocations of one slot is outside the modeled lifetime; the wrap residual is recorded, not silently assumed (standards Law 2).
+    // CEP:ASSUMES: Generation wrap after 2^32 revocations of one slot can alias a pre-wrap handle with generation 0; the residual is recorded in security/threat_model.md TM-3 and the crate invariants, not silently assumed (standards Law 2).
     // CEP:COST: O(1) after bounds checks; one compare, one generation advance, one flag clear.
     // CEP:OPTIMAL: lower-bound optimal
-    // CEP:OPTPROOF: correct revocation requires the same three checks lookup performs plus one generation advance and one flag clear; the implementation performs exactly that. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
+    // CEP:OPTPROOF: correct revocation requires the same three checks lookup performs plus the four writes the contract demands (generation advance, occupancy clear, rights scrub, object scrub); the implementation performs exactly that. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
     // CEP:SECURITY: Revocation-closes-access is a mandatory system proof (design.md 21); the Kani harness proves the property over symbolic handles.
     // CEP:EVIDENCE: cargo test -p civ-capability test_revoke_closes_access, test_revoke_state_unchanged_on_error; Kani proof proof_revoke_closes_access.
     // CEP:ID: CS-a04
@@ -285,7 +286,7 @@ impl<'a> CapabilityTable<'a> {
     // CEP:COST: O(1); one bounds check, one occupancy check, one generation compare.
     // CEP:OPTIMAL: lower-bound optimal
     // CEP:OPTPROOF: fail-closed validation requires exactly the three checks the implementation performs, and resolution is two register reads. Benchmark receipt pending the CIV-4 hardware contract (ticket CEP-91).
-    // CEP:SECURITY: Forgery resistance is the TM-3 discharge: any u64 either resolves correctly or fails closed; the Kani harness runs the full input space.
+    // CEP:SECURITY: Forgery resistance is the TM-3 discharge: any u64 either resolves correctly or fails closed; the Kani harness runs the full input space. Timing policy (standards 22.9): lookup is not constant time with respect to the handle (three sequenced checks and slot-indexed access are the documented API contract); it processes no secret material, and the cache-footprint residual for handle-dependent branching is deferred under CIV-3.
     // CEP:EVIDENCE: cargo test -p civ-capability test_lookup_fail_closed, test_stale_handle_fails_closed, test_forged_generation_fails; Kani proof proof_lookup_fail_closed.
     // CEP:ID: CS-a05
     pub fn lookup(&self, handle: Handle) -> Result<(Rights, u64), CapabilityError> {
@@ -310,7 +311,7 @@ impl<'a> CapabilityTable<'a> {
     // CEP:FAILURE: Inherits lookup's fail-closed classification exactly.
     // CEP:ASSUMES: none beyond lookup.
     // CEP:COST: O(1); same checks as lookup.
-    // CEP:EVIDENCE: cargo test -p civ-capability test_derive_attenuates.
+    // CEP:EVIDENCE: cargo test -p civ-capability test_derive_full_space_never_escalates (exercises rights_of on every successful derive); Kani proof proof_handle_space_no_panic.
     #[inline]
     pub fn rights_of(&self, handle: Handle) -> Result<Rights, CapabilityError> {
         let (rights, _object) = self.lookup(handle)?;
@@ -337,7 +338,7 @@ impl<'a> CapabilityTable<'a> {
     // CEP:FAILURE: none; total accessor.
     // CEP:ASSUMES: none.
     // CEP:COST: O(1).
-    // CEP:EVIDENCE: cargo test -p civ-capability test_table_exhaustion_exact.
+    // CEP:EVIDENCE: cargo test -p civ-capability test_allocated_count_consistency (asserts capacity in the sum invariant).
     #[inline]
     pub const fn capacity(&self) -> u64 {
         self.slots.len() as u64

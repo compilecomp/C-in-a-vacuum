@@ -8,7 +8,7 @@ Unit test: exhaustive sweep over every (parent rights, request rights) pair of t
 
 ## Tier 2: Silicon Reality
 
-64 parents x 32 requests with a grant toggle = 4096 classification checks; every successful child is verified to equal the request, sit inside the parent set, and inherit the parent object. This is the unit-test counterpart of the Kani escalation proof: the named-rights space is checked exhaustively rather than sampled, so a masking regression in any single right bit cannot hide.
+64 parents (32 rights masks x grant toggle) x 32 request masks = 2048 classification checks; every successful child is verified to equal the request and sit inside the parent set (object inheritance is verified by the Kani escalation harness and test_derive_attenuates). This is the unit-test counterpart of the Kani escalation proof: the named-rights space is checked exhaustively rather than sampled, so a masking regression in any single right bit cannot hide.
 
 ## Silent Failure Checklist
 

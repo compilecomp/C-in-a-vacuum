@@ -1,6 +1,6 @@
 // CEP:FILE: source/kernel/civ-capability/src/lib.rs
 // CEP:WHAT: Crate root for the CIV capability subsystem (design.md 9.1 authority system).
-// CEP:WHY: Wires the rights bitset, the capability table, and the error taxonomy behind one no_std surface so the kernel's authority checks depend on a single verified unit with typed failures.
+// CEP:WHY: Wires the rights bitset, the capability table, and the error taxonomy behind one no_std surface so the kernel's authority checks depend on a single proof-backed unit (Kani results UNVERIFIED until recorded runs) with typed failures.
 // CEP:CLASS: CEP-1
 // CEP:STATUS: partial
 // CEP:OWNER: civ-maintainer
@@ -25,17 +25,23 @@
 //!    in range, the slot is allocated, and the generation matches; every
 //!    other u64 value is rejected with a typed error.
 //! 3. Revocation closes access: after `revoke` succeeds, the same handle
-//!    never resolves again (the generation has advanced past it).
+//!    never resolves again (the generation has advanced past it). Residual:
+//!    after 2^32 revocations of one slot the u32 generation wraps, so a
+//!    pre-wrap handle with generation 0 can alias the slot (recorded in
+//!    threat model TM-3, not silently assumed).
 //! 4. No panic on any input: all index arithmetic is bounds-checked, all
 //!    right-set arithmetic is total over u64.
 //!
 //! # Known subset (CEP:STATUS partial, ticket CIV-5)
 //!
 //! Cascading revocation (revoking a parent invalidates capabilities derived
-//! from it) is not implemented; revocation invalidates only the named
-//! handle. Lineage tracking is the declared next increment. All other
-//! design.md 9.1 surfaces named below are implemented: representation,
-//! allocation, validation, derivation, attenuation, revocation.
+//! from it) is a declared future increment (ticket CIV-5); revocation
+//! invalidates only the named handle. Capability transfer between processes
+//! and the authority audit (design.md 9.1) are likewise UNDEFINED at this
+//! increment and are declared here rather than silently assumed (design.md
+//! 0.3). The remaining design.md 9.1 surfaces are implemented:
+//! representation, allocation, validation, derivation, attenuation,
+//! revocation.
 //!
 //! # Concurrency
 //!
