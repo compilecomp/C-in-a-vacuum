@@ -25,7 +25,7 @@
       "mode": "block",
       "required_fields": ["CEP:WHAT", "CEP:WHY", "CEP:STATUS", "CEP:FAILURE", "CEP:ASSUMES", "CEP:COST", "CEP:EVIDENCE"],
       "min_body_statements": 2,
-      "gap_pattern": "^(#\\[|\\}\\)|where|->|pub fn|fn |unsafe fn|const fn|extern )",
+      "gap_pattern": "^(#\\[|///|\\}\\)|where|->|pub fn|fn |unsafe fn|const fn|extern )",
       "require_block_for_lambdas": false
     },
     "CEP-LINT-STATUS-VALUE": {

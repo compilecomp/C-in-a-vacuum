@@ -1,4 +1,105 @@
 {
-  "registry_version": 1,
-  "functions": []
+  "registry_version": 2,
+  "functions": [
+    {
+      "id": "MEM-a01",
+      "domain": "MEM",
+      "summary": "FrameAllocator::new"
+    },
+    {
+      "id": "MEM-a02",
+      "domain": "MEM",
+      "summary": "FrameAllocator::alloc"
+    },
+    {
+      "id": "MEM-a03",
+      "domain": "MEM",
+      "summary": "FrameAllocator::reserve_range"
+    },
+    {
+      "id": "MEM-a04",
+      "domain": "MEM",
+      "summary": "Bitmap::find_zero"
+    },
+    {
+      "id": "MEM-a05",
+      "domain": "MEM",
+      "summary": "Bitmap::find_one"
+    },
+    {
+      "id": "MEM-a06",
+      "domain": "MEM",
+      "summary": "Bitmap::run_is_zero"
+    },
+    {
+      "id": "MEM-a07",
+      "domain": "MEM",
+      "summary": "Bitmap::find_zero_run"
+    },
+    {
+      "id": "MEM-a08",
+      "domain": "MEM",
+      "summary": "Bitmap::set_run"
+    },
+    {
+      "id": "MEM-a09",
+      "domain": "MEM",
+      "summary": "proof_new_rejects_bad_config_no_panic"
+    },
+    {
+      "id": "MEM-a10",
+      "domain": "MEM",
+      "summary": "proof_alloc_exhaustion_and_uniqueness"
+    },
+    {
+      "id": "MEM-a11",
+      "domain": "MEM",
+      "summary": "proof_free_validates_untrusted_input"
+    },
+    {
+      "id": "MEM-a12",
+      "domain": "MEM",
+      "summary": "proof_contiguous_bounds_and_disjoint"
+    },
+    {
+      "id": "MEM-a13",
+      "domain": "MEM",
+      "summary": "proof_reserve_conflict_is_atomic"
+    },
+    {
+      "id": "MEM-a14",
+      "domain": "MEM",
+      "summary": "proof_invariant_popcount_matches_allocated"
+    },
+    {
+      "id": "MEM-a15h",
+      "domain": "MEM",
+      "summary": "proof_bitmap_run_search_consistent"
+    },
+    {
+      "id": "MEM-a16h",
+      "domain": "MEM",
+      "summary": "proof_bitmap_set_run_bounds"
+    },
+    {
+      "id": "MEM-a17",
+      "domain": "MEM",
+      "summary": "test_bitmap_direct_out_of_bounds_rejected"
+    },
+    {
+      "id": "MEM-a18",
+      "domain": "MEM",
+      "summary": "test_frame_range_contains"
+    },
+    {
+      "id": "MEM-a15",
+      "domain": "MEM",
+      "summary": "test_boundary_first_and_last_frame"
+    },
+    {
+      "id": "MEM-a16",
+      "domain": "MEM",
+      "summary": "test_bitmap_find_zero_patterns"
+    }
+  ]
 }

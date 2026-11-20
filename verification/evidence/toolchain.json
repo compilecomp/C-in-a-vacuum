@@ -1,0 +1,18 @@
+{
+  "captured_at_commit": "pre-commit capture (this evidence ships in the same commit it describes)",
+  "toolchain": [
+    "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+    "clippy 0.1.100 (0ef1bc3860 2026-11-09)",
+    "unavailable-at-capture-time"
+  ],
+  "kani": {
+    "status": "installer in progress at capture time; proofs marked UNVERIFIED until a recorded run exists"
+  },
+  "source_sha256": "0015bd8c7dd729da73ff967f4e829e6fcbfcfffbde36ac6fc162be852441b6da",
+  "commands": [
+    "cargo test -p civ-pmm",
+    "cargo clippy -p civ-pmm --all-targets -- -D warnings",
+    "cargo doc -p civ-pmm --no-deps --document-private-items"
+  ]
+}

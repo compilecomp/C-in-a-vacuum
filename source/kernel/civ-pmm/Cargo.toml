@@ -1,0 +1,11 @@
+[package]
+name = "civ-pmm"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "CIV physical memory manager: frame identity, bitmap page allocator (design.md 4.1)"
+
+[dependencies]
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(kani)'] }

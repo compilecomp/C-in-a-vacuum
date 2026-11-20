@@ -40,8 +40,8 @@ and residual risk. Entries are versioned; a change to any field is a registry up
 | Attack surface | All public API entry points of `civ-pmm` and `civ-capability` |
 | Required protection | Total functions returning typed errors; no panic on any input; attenuation-only derivation |
 | Assumptions | None; inputs are treated as untrusted |
-| Verification technique | Kani proof of panic freedom over symbolic arguments; property tests |
-| Residual risk | None within modeled argument ranges (full 64-bit ranges for indices and counts) |
+| Verification technique | Kani proof of panic freedom over symbolic arguments (free target: full u64 range; frame counts bounded per harness with unit tests covering the bound edges); adversarial unit tests per standards 61.4 |
+| Residual risk | None within the modeled ranges; the unbounded frame-count range is the declared FV-1 refinement gap (unit test test_new_rejects_overflow_base covers the window-top edge) |
 
 ## TM-3: Capability forgery
 

@@ -1,0 +1,52 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running unittests src/lib.rs (target/debug/build/civ-pmm/344cd94f9b4ce9e8/out/civ_pmm-344cd94f9b4ce9e8)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/allocator_tests.rs (target/debug/build/civ-pmm/d3595dc4dcfaa3b4/out/allocator_tests-d3595dc4dcfaa3b4)
+
+running 33 tests
+test test_alloc_contiguous_first_fit_layout ... ok
+test test_alloc_contiguous_after_fragmentation ... ok
+test test_alloc_contiguous_full_capacity ... ok
+test test_alloc_contiguous_oversized_rejected ... ok
+test test_alloc_contiguous_rejects_after_exhaustion ... ok
+test test_alloc_contiguous_zero_len_rejected ... ok
+test test_alloc_exhaustion_exact ... ok
+test test_alloc_hint_wrap ... ok
+test test_alloc_free_roundtrip ... ok
+test test_bitmap_direct_out_of_bounds_rejected ... ok
+test test_alloc_returns_disjoint_frames ... ok
+test test_bitmap_out_of_bounds_rejected ... ok
+test test_bitmap_find_zero_patterns ... ok
+test test_boundary_first_and_last_frame ... ok
+test test_double_free_rejected ... ok
+test test_error_display_stable_and_nonempty ... ok
+test test_frame_address_overflow_rejected ... ok
+test test_frame_address_roundtrip ... ok
+test test_frame_range_contains ... ok
+test test_frame_range_inverted_rejected ... ok
+test test_free_never_allocated_rejected ... ok
+test test_free_out_of_range_rejected ... ok
+test test_free_then_realloc_returns_same_frame ... ok
+test test_new_accepts_exact_bitmap_fit ... ok
+test test_new_rejects_overflow_base ... ok
+test test_new_rejects_unaligned_base ... ok
+test test_new_rejects_undersized_bitmap ... ok
+test test_new_rejects_zero_frames ... ok
+test test_reserve_range_conflict_atomic ... ok
+test test_reserve_range_empty_rejected ... ok
+test test_reserve_range_out_of_window_rejected ... ok
+test test_reserve_range_then_alloc_skips ... ok
+test test_stats_consistency ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests civ_pmm
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
